@@ -1,0 +1,21 @@
+{
+  "name": "ts-ethereum-vm",
+  "version": "0.0.0",
+  "description": "Ethereum Virtual Machine (EVM) implemented in Typescript",
+  "main": "index.ts",
+  "scripts": {
+    "start": "./node_modules/.bin/tsc -p ./ --target ES5 && node build/index.js"
+  },
+  "keywords": [
+    "ethereum",
+    "evm",
+    "typescript"
+  ],
+  "author": "***REMOVED***",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {
+    "tslint": "^5.9.1",
+    "tslint-react": "^3.4.0"
+  }
+}
