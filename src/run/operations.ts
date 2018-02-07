@@ -1,5 +1,6 @@
 
 import { State } from '../state/state';
+import { N256 } from '../lib/N256';
 
 export type Operation = (state: State) => State;
 export type DynamicOp = (param: number) => Operation;
@@ -12,49 +13,49 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   ADD: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(fst + snd);
+    return state.pushStack(fst.add(snd));
   },
 
   SUB: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(fst - snd);
+    return state.pushStack(fst.sub(snd));
   },
 
   MUL: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(fst * snd);
+    return state.pushStack(fst.mul(snd));
   },
 
   DIV: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(Math.floor(fst / snd));
+    return state.pushStack(fst.div(snd));
   },
 
   EXP: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(fst ** snd);
+    return state.pushStack(fst.exp(snd));
   },
 
   /* bitwise */
   AND: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(fst & snd);
+    return state.pushStack(fst.and(snd));
   },
 
   OR: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.pushStack(fst | snd);
+    return state.pushStack(fst.or(snd));
   },
 
   NOT: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
-    return state.pushStack(~fst);
+    return state.pushStack(fst.not());
   },
 
   SSTORE: (state: State): State => {
@@ -81,7 +82,7 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
       toPush += state.nextCode().toString(16);
       state = state.incrementPC();
     }
-    return state.pushStack(parseInt(toPush, 16));
+    return state.pushStack(new N256(parseInt(toPush, 16)));
   },
 
   SWAP: (param: number) => (state: State): State => {

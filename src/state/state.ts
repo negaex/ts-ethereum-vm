@@ -1,6 +1,7 @@
 import { Record } from '../lib/record';
-import { Stack, emptyStack } from './stack';
-import { Storage, emptyStorage } from './storage';
+import { Stack, emptyStack, stackToString } from './stack';
+import { Storage, emptyStorage, storageToString } from './storage';
+import { N256 } from '../lib/N256';
 
 interface StateInterface {
   code: Buffer;
@@ -47,7 +48,7 @@ export class State extends Record<StateInterface>({
   }
 
   // Stack
-  stackFirst(): number {
+  stackFirst(): N256 {
     return this.stack.first();
   }
 
@@ -55,7 +56,7 @@ export class State extends Record<StateInterface>({
     return this.set('stack', this.stack.delete(0));
   }
 
-  pushStack(value: number): State {
+  pushStack(value: N256): State {
     return this.set('stack', this.stack.insert(0, value));
   }
 
@@ -69,12 +70,12 @@ export class State extends Record<StateInterface>({
   }
 
   // Storage
-  storeAt(address: number, value: number): State {
+  storeAt(address: N256, value: N256): State {
     return this.set('storage', this.storage.set(address, value));
   }
 
-  storedAt(address: number): number {
-    return this.get('storage').get(address) || 0;
+  storedAt(address: N256): N256 {
+    return this.get('storage').get(address) || new N256();
   }
 
   // Gas
@@ -92,6 +93,6 @@ export class State extends Record<StateInterface>({
 
   toString(): string {
     return `PC: ${this.programCounter}, running: ${this.running}, \
-stack: ${this.stack}, storage: ${this.storage}, gasUsed: ${this.gasUsed}`;
+stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, gasUsed: ${this.gasUsed}`;
   }
 }
