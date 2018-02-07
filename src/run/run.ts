@@ -14,7 +14,6 @@ export const run = (state: State): State => {
       throw new InvalidBinary(`Invalid op: ${nextCode}`);
     }
     state = step(state, nextOp);
-    console.log(state);
   }
 
   return state;

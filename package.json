@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/immutable": "^3.8.7",
     "@types/node": "^9.4.0",
+    "bignumber.js": "^6.0.0",
     "immutable": "^3.8.2",
     "typescript": "^2.7.1"
   },

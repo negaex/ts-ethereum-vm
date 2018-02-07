@@ -3,9 +3,13 @@ import { run } from './run/run';
 import { State } from './state/state';
 
 const main = () => {
-  const binary = Buffer.from('6001600081905550', 'hex');
+  const demo1 = '6001600081905550';
+  const demo2 = '600080547002000000000000000000000000000000006001608060020a03199091166001176001608060020a0316179055';
+
+  const binary = Buffer.from(demo2, 'hex');
   const initialState = new State().loadCode(binary);
-  console.log(initialState);
+  console.log(`Running code: ${binary.toString('hex')}`);
+  console.log(`START => \t{${initialState}}`);
   run(initialState);
 };
 

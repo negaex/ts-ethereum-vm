@@ -8,6 +8,7 @@ interface StateInterface {
   running: boolean;
   stack: Stack;
   storage: Storage;
+  gasUsed: number;
 }
 
 export class State extends Record<StateInterface>({
@@ -16,6 +17,7 @@ export class State extends Record<StateInterface>({
   running: true,
   stack: emptyStack,
   storage: emptyStorage,
+  gasUsed: 0,
 }) {
 
   // Code
@@ -67,8 +69,17 @@ export class State extends Record<StateInterface>({
   }
 
   // Storage
-  storeAt(value: number, address: number): State {
+  storeAt(address: number, value: number): State {
     return this.set('storage', this.storage.set(address, value));
+  }
+
+  storedAt(address: number): number {
+    return this.get('storage').get(address) || 0;
+  }
+
+  // Gas
+  useGas(gas: number): State {
+    return this.set('gasUsed', this.get('gasUsed') + gas);
   }
 
   /*
@@ -80,7 +91,7 @@ export class State extends Record<StateInterface>({
   */
 
   toString(): string {
-    return `PC: ${this.programCounter}, code: ${this.code.toString('hex')}, running: ${this.running}, \
-stack: ${this.stack}, storage: ${this.storage}`;
+    return `PC: ${this.programCounter}, running: ${this.running}, \
+stack: ${this.stack}, storage: ${this.storage}, gasUsed: ${this.gasUsed}`;
   }
 }
