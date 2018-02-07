@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es2015",
-      "dom"
-    ],
     "module": "commonjs",
+    "lib": [
+      "esnext"
+    ],
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,

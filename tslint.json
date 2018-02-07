@@ -27,8 +27,6 @@
       "never-prefix"
     ],
     "jsdoc-format": true,
-    "jsx-no-lambda": false,
-    "jsx-no-multiline-js": false,
     "label-position": true,
     "max-line-length": [
       true,
@@ -68,8 +66,7 @@
     ],
     "quotemark": [
       true,
-      "double",
-      "jsx-double"
+      "single"
     ],
     "radix": true,
     "semicolon": [

@@ -4,7 +4,7 @@
   "description": "Ethereum Virtual Machine (EVM) implemented in Typescript",
   "main": "index.ts",
   "scripts": {
-    "start": "./node_modules/.bin/tsc -p ./ --target ES5 && node build/index.js"
+    "run": "./node_modules/.bin/tsc -p ./ --target ES5 && node build/index.js"
   },
   "keywords": [
     "ethereum",
@@ -13,7 +13,12 @@
   ],
   "author": "***REMOVED***",
   "license": "",
-  "dependencies": {},
+  "dependencies": {
+    "@types/immutable": "^3.8.7",
+    "@types/node": "^9.4.0",
+    "immutable": "^3.8.2",
+    "typescript": "^2.7.1"
+  },
   "devDependencies": {
     "tslint": "^5.9.1",
     "tslint-react": "^3.4.0"
