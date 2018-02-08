@@ -16,6 +16,9 @@ export const step = (state: State, opcode: OpCode): State => {
   if (!operation) {
     throw new VMError(`Operation not implemented: //${opcode.mnemonic}\\`);
   }
+
+  process.stdout.write(`${opcode.mnemonic} ==> `);
+
   // Increment program counter
   state = state.incrementPC();
 
@@ -25,7 +28,7 @@ export const step = (state: State, opcode: OpCode): State => {
   // Run operation
   state = operation(state);
 
-  console.log(`${opcode.mnemonic} ==> \t{${state}}`);
+  console.log(`\t{${state}}`);
 
   // Return new state
   return state;

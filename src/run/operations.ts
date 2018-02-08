@@ -61,7 +61,7 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   SSTORE: (state: State): State => {
     const fst = state.stackFirst(); state = state.popStack();
     const snd = state.stackFirst(); state = state.popStack();
-    return state.storeAt(snd, fst);
+    return state.storeAt(fst, snd);
   },
 
   SLOAD: (state: State): State => {
@@ -70,7 +70,7 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
 
   POP: (state: State): State => {
-    return state.popStack().incrementPC();
+    return state.popStack();
   },
 
   /* DYNAMIC */
@@ -87,13 +87,13 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
 
   SWAP: (param: number) => (state: State): State => {
     const values = [];
-    for (let i = 0; i < param; i++) {
+    for (let i = 0; i < param + 1; i++) {
       values.push(state.stackFirst()); state = state.popStack();
     }
-    const tmp = values[param - 1];
-    values[param - 1] = values[0];
+    const tmp = values[param];
+    values[param] = values[0];
     values[0] = tmp;
-    for (let i = 0; i < param; i++) {
+    for (let i = param; i >= 0; i--) {
       state = state.pushStack(values[i]);
     }
     return state;
@@ -104,10 +104,10 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     for (let i = 0; i < param; i++) {
       values.push(state.stackFirst()); state = state.popStack();
     }
-    state = state.pushStack(values[values.length - 1]);
-    for (let i = 0; i < param; i++) {
+    for (let i = param - 1; i >= 0; i--) {
       state = state.pushStack(values[i]);
     }
+    state = state.pushStack(values[values.length - 1]);
     return state;
   },
 

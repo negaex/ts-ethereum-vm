@@ -57,7 +57,7 @@ export class N256 {
 
     return new N256(
       this.value.zipWith(
-        (v1: Bit, v2: Bit): Bit => (v1 + v2) === 1 ? 1 : 0,
+        (v1: Bit, v2: Bit): Bit => (v1 + v2) === 2 ? 1 : 0,
         other.value).toList()
     );
   }
@@ -133,6 +133,6 @@ export class N256 {
   }
 
   toBinary(): string {
-    return this.value.join('');
+    return this.value.join('').replace(/^0+/, '') || '0';
   }
 }
