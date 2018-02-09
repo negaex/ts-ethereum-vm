@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "run": "./node_modules/.bin/tsc -p ./ --target ES5 && node build/index.js",
-    "test": "mocha -r ts-node/register src/**/*_test.ts"
+    "test": "mocha -r ts-node/register src/**/*_test.ts test/**/*.ts"
   },
   "keywords": [
     "ethereum",

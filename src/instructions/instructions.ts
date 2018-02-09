@@ -67,7 +67,7 @@ export const instructions: { [code: number]: OpCode } = {
   0x52: { mnemonic: 'MSTORE', pop: 2, push: 0, gas: 3 },
   0x53: { mnemonic: 'MSTORE8', pop: 2, push: 0, gas: 3 },
   0x54: { mnemonic: 'SLOAD', pop: 1, push: 1, gas: 50 },
-  0x55: { mnemonic: 'SSTORE', pop: 2, push: 0, gas: 0 },
+  0x55: { mnemonic: 'SSTORE', pop: 2, push: 0, gas: 500 },
   0x56: { mnemonic: 'JUMP', pop: 1, push: 0, gas: 8 },
   0x57: { mnemonic: 'JUMPI', pop: 2, push: 0, gas: 10 },
   0x58: { mnemonic: 'PC', pop: 0, push: 1, gas: 2 },
@@ -84,7 +84,7 @@ export const instructions: { [code: number]: OpCode } = {
 
   // arbitrary length storage (proposal for metropolis hardfork)
   0xe1: { mnemonic: 'SLOADBYTES', pop: 3, push: 0, gas: 50 },
-  0xe2: { mnemonic: 'SSTOREBYTES', pop: 3, push: 0, gas: 0 },
+  0xe2: { mnemonic: 'SSTOREBYTES', pop: 3, push: 0, gas: 500 },
   0xe3: { mnemonic: 'SSIZE', pop: 1, push: 1, gas: 50 },
 
   // closures

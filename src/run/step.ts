@@ -4,7 +4,7 @@ import { State } from '../state/state';
 import { operations, Operation, DynamicOp } from './operations';
 import { VMError } from '../errors';
 
-export const step = (state: State, opcode: OpCode): State => {
+export const step = (state: State, opcode: OpCode, log: boolean): State => {
   const regex = /([A-Z]+)([0-9]+)?/;
   const [_, opName, opParam] = regex.exec(opcode.mnemonic);
   let operation: Operation;
@@ -17,7 +17,9 @@ export const step = (state: State, opcode: OpCode): State => {
     throw new VMError(`Operation not implemented: //${opcode.mnemonic}\\`);
   }
 
-  process.stdout.write(`${opcode.mnemonic} ==> `);
+  if (log) {
+    process.stdout.write(`${opcode.mnemonic} ==> `);
+  }
 
   // Increment program counter
   state = state.incrementPC();
@@ -28,7 +30,9 @@ export const step = (state: State, opcode: OpCode): State => {
   // Run operation
   state = operation(state);
 
-  console.log(`\t{${state}}`);
+  if (log) {
+    console.log(`\t{${state}}`);
+  }
 
   // Return new state
   return state;

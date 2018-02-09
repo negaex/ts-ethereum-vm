@@ -49,8 +49,19 @@ describe('N256', () => {
   it('can divide numbers', () => {
     (new N256(6)).div(3).toNumber().should.equal(2);
     (new N256(16129)).div(127).toNumber().should.equal(127);
-    (new N256(295147905144993100000)).div(2 ** 34 - 1).toNumber().should.equal(2 ** 34 - 1);
-    // (new N256(1)).mul(new N256().not()).toNumber().should.equal(1);
+    ((new N256(1)).div(2)).toNumber().should.equal(0);
+    ((new N256(5)).div(4)).toNumber().should.equal(1);
+    const num = (new N256(2)).exp(27).sub(1);
+    (num.exp(2)).div(num).toBinary().should.equal(num.toBinary());
+  });
+
+  it('can exponentiate numbers', () => {
+    (new N256(6)).exp(2).toNumber().should.equal(36);
+    (new N256(100)).exp(2).toNumber().should.equal(10000);
+    (new N256(17)).exp(7).toNumber().should.equal(410338673);
+    (new N256(19)).exp(1).toNumber().should.equal(19);
+    (new N256(2)).exp(0).toNumber().should.equal(1);
+    (new N256(0)).exp(0).toNumber().should.equal(1);
   });
 
 });

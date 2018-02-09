@@ -66,6 +66,23 @@ export class N256 {
     return false;
   }
 
+  lessThanOrEqual(other: N256Param): boolean {
+    return !this.greaterThan(other);
+  }
+
+  greatherThanOrEqual(other: N256Param): boolean {
+    return !this.lessThan(other);
+  }
+
+  equals(other: N256Param): boolean {
+    other = new N256(other);
+    return this.value.zip(other.value).reduce((acc: boolean, [l, r]: [Bit, Bit]) => acc && (l === r), true);
+  }
+
+  isZero(): boolean {
+    return this.equals(0);
+  }
+
   and(other: N256Param): N256 {
     other = new N256(other);
 
@@ -130,16 +147,14 @@ export class N256 {
   }
 
   mul(other: N256Param): N256 {
-    let left = new N256(this);
     let right = new N256(other);
     let ret = new N256();
 
     for (let i = 255; i >= 0; i--) {
-      if (right.value.get(255) === 1) {
-        ret = ret.add(left);
+      if (this.value.get(i) === 1) {
+        ret = ret.add(right);
       }
-      right = right.shiftRight(1);
-      left = left.shiftLeft(1);
+      right = right.shiftLeft(1);
     }
 
     return ret;
@@ -147,53 +162,41 @@ export class N256 {
 
   div(other: N256Param): N256 {
     let dividend = new N256(this);
-    let divisor = new N256(other);
-    let quotient = new N256();
-    let remainder = new N256();
+    let denom = new N256(other); // divisor
+    let current = new N256(1);
+    let answer = new N256(0);
 
-    let nBits = 256;
-    let previousDividend = dividend;
-
-    while (remainder.lessThan(divisor)) {
-      const bit = dividend.value.get(0);
-      console.log(dividend.toBinary());
-      remainder = remainder.shiftLeft(1).or(bit);
-      previousDividend = dividend;
-      dividend = dividend.shiftLeft(1);
-      console.log(dividend.toBinary());
-      nBits--;
+    while (denom.lessThanOrEqual(dividend)) {
+      denom = denom.shiftLeft(1);
+      current = current.shiftLeft(1);
     }
 
-    dividend = previousDividend;
-    remainder = remainder.shiftRight(1);
-    nBits++;
+    denom = denom.shiftRight(1);
+    current = current.shiftRight(1);
 
-    console.log('\n');
-    console.log(dividend.toBinary());
-    console.log(remainder.toBinary());
-    console.log('...');
-
-    for (let i = 0; i < nBits; i++) {
-      const bit = dividend.value.get(0);
-      remainder = remainder.shiftLeft(1).or(bit);
-      const t = remainder.sub(divisor);
-      const q = t.value.get(0) === 0 ? 1 : 0;
-      dividend = dividend.shiftLeft(1);
-      quotient = (quotient.shiftLeft(1).or(q));
-      if (q === 1) {
-        remainder = t;
+    while (!current.isZero()) {
+      if (dividend.greatherThanOrEqual(denom)) {
+        dividend = dividend.sub(denom);
+        answer = answer.or(current);
       }
-      console.log(quotient.toBinary());
+      current = current.shiftRight(1);
+      denom = denom.shiftRight(1);
     }
 
-    return quotient;
-    // return new N256(new BigNumber(this.toString()).dividedToIntegerBy(other.toString()).toNumber());
+    return answer;
   }
 
   exp(other: N256Param): N256 {
-    console.error('Exponentiation implemented yet!');
     other = new N256(other);
-    return new N256(new BigNumber(this.toString()).pow(new BigNumber(other.toString()).toNumber()).toNumber());
+    if (other.isZero()) {
+      return new N256(1);
+    } else if (other.equals(1)) {
+      return this;
+    } else if (other.value.get(255) === 0) {
+      return this.mul(this).exp(other.div(2));
+    } else if (other.value.get(255) === 1) {
+      return this.mul(this.mul(this).exp(other.sub(1).div(2)));
+    }
   }
 
   not(): N256 {

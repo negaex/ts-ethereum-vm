@@ -5,7 +5,7 @@ import { operations, Operation } from './operations';
 import { step } from './step';
 import { InvalidBinary } from '../errors';
 
-export const run = (state: State): State => {
+export const run = (state: State, log: boolean): State => {
 
   while (state.hasCode() && state.get('running')) {
     const nextCode: number = state.nextCode();
@@ -13,7 +13,7 @@ export const run = (state: State): State => {
     if (!nextOp) {
       throw new InvalidBinary(`Invalid op: ${nextCode}`);
     }
-    state = step(state, nextOp);
+    state = step(state, nextOp, log);
   }
 
   return state;
