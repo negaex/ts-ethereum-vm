@@ -11,72 +11,72 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
 
   ADD: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.add(snd));
   },
 
   SUB: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.sub(snd));
   },
 
   MUL: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.mul(snd));
   },
 
   DIV: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.div(snd));
   },
 
   EXP: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.exp(snd));
   },
 
   /* bitwise */
   AND: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.and(snd));
   },
 
   OR: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.or(snd));
   },
 
   NOT: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
     return state.pushStack(fst.not());
   },
 
   SSTORE: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.storeAt(fst, snd);
   },
 
   SLOAD: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
     return state.pushStack(state.storedAt(fst));
   },
 
   MSTORE: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     return state.setMemoryAt(fst, snd);
   },
 
   MLOAD: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
     return state.pushStack(state.getMemoryAt(fst));
   },
 
@@ -86,13 +86,13 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
 
   ISZERO: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
     return state.pushStack(fst.isZero() ? new N256(0) : new N256(1)); 
   },
 
   JUMPI: (state: State): State => {
-    const fst = state.stackFirst(); state = state.popStack();
-    const snd = state.stackFirst(); state = state.popStack();
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
     if (snd.isZero()) {
       state = state.set('programCounter', fst.toNumber());
     }
@@ -113,7 +113,8 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
 
   POP: (state: State): State => {
-    return state.popStack();
+    [, state] = state.popStack();
+    return state;
   },
 
   /* DYNAMIC */
@@ -131,7 +132,8 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   SWAP: (param: number) => (state: State): State => {
     const values = [];
     for (let i = 0; i < param + 1; i++) {
-      values.push(state.stackFirst()); state = state.popStack();
+      let fst; [fst, state] = state.popStack();
+      values.push(fst);
     }
     const tmp = values[param];
     values[param] = values[0];
@@ -145,7 +147,8 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   DUP: (param: number) => (state: State): State => {
     const values = [];
     for (let i = 0; i < param; i++) {
-      values.push(state.stackFirst()); state = state.popStack();
+      let fst; [fst, state] = state.popStack();
+      values.push(fst);
     }
     for (let i = param - 1; i >= 0; i--) {
       state = state.pushStack(values[i]);

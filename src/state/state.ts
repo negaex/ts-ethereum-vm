@@ -55,8 +55,8 @@ export class State extends Record<StateInterface>({
     return this.stack.first();
   }
 
-  popStack(): State {
-    return this.set('stack', this.stack.delete(0));
+  popStack(): [N256, State] {
+    return [this.stack.first(), this.set('stack', this.stack.delete(0))];
   }
 
   pushStack(value: N256): State {
