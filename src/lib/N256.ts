@@ -21,6 +21,8 @@ const fromNum = (bin: number): N256Value => {
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * Inefficient array-based 256 bit number
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * 
+ * TODO: Use an immutable record
  */
 export class N256 {
   value: N256Value;
