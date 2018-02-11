@@ -1,6 +1,7 @@
 
 import { State } from '../state/state';
 import { N256 } from '../lib/N256';
+import { N8 } from '../lib/N8';
 
 export type Operation = (state: State) => State;
 export type DynamicOp = (param: number) => Operation;
@@ -100,15 +101,28 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
 
   JUMPDEST: (state: State): State => {
+    // TODO!!! - Mark as a valid jump destination
     return state;
   },
 
   CODECOPY: (state: State): State => {
     // TODO!!!
+
+    let memOffset; [memOffset, state] = state.popStack();
+    let codeOffset; [codeOffset, state] = state.popStack();
+    let length; [length, state] = state.popStack();
+
+    for (let i = new N256(0); i.lessThanOrEqual(length); i = i.add(1)) {
+      state = state.setMemoryByteAt(memOffset, new N8(state.code[codeOffset.toNumber()]));
+      memOffset = memOffset.add(1);
+      codeOffset = codeOffset.add(1);
+    }
+
     return state;
   },
 
   RETURN: (state: State): State => {
+    // TODO
     return state.stop();
   },
 

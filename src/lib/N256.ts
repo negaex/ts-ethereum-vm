@@ -1,20 +1,20 @@
 
 import { List } from 'immutable';
 
-type N256Value = List<Bit>;
-type N256Param = number | N256 | N256Value;
 export type Bit = 0 | 1;
+export type BitList = List<Bit>;
+type N256Param = number | N256 | BitList;
 
-const pad = (arr: N256Value): N256Value => {
-  arr = arr.slice(Math.max(0, arr.size - 256)).toList();
-  const diff = 256 - arr.size;
+export const pad = (arr: BitList, length: number): BitList => {
+  arr = arr.slice(Math.max(0, arr.size - length)).toList();
+  const diff = length - arr.size;
   return List(new Array(diff).fill(0)).push(...arr.toArray());
 };
 
-const fromNum = (bin: number): N256Value => {
+export const fromNum = (bin: number, length: number): BitList => {
   const arr = bin.toString(2).split('').map(x => (x === '0') ? 0 : 1);
   // console.log(arr);
-  return pad(List(arr));
+  return pad(List(arr), length);
 };
 
 /**
@@ -25,7 +25,7 @@ const fromNum = (bin: number): N256Value => {
  * TODO: Use an immutable record
  */
 export class N256 {
-  value: N256Value;
+  value: BitList;
 
   constructor(num?: N256Param) {
     if (num === undefined) {
@@ -36,10 +36,10 @@ export class N256 {
       this.value = (num as N256).value;
     } else if (typeof num === 'number') {
       // number
-      this.value = fromNum(num);
+      this.value = fromNum(num, 256);
     } else {
       // N256Value
-      this.value = num;
+      this.value = pad(num, 256);
     }
   }
 

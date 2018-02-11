@@ -13,12 +13,16 @@ export class Memory extends Record<MemoryInterface>({
     highest: new N256(0),
   }) {
 
+    storeByte(index: N256, value: N8): Memory {
+        return this.set('memory', this.memory.set(index.toBinary(), value));
+    }
+
     store(index: N256, value: N256): Memory {
         const values: N8[] = fromN256(value);
-        let newThis = this;
+        let newThis: Memory = this;
         let gas = 0;
         for (let i = 0; i < values.length; i++) {
-            newThis = this.set('memory', this.memory.set(index.toString(), values[i]));
+            newThis = this.set('memory', this.memory.set(index.toBinary(), values[i]));
             index = index.add(1);
         }
         // Todo: should be aligned to %32
@@ -32,12 +36,13 @@ export class Memory extends Record<MemoryInterface>({
     retrieve(index: N256): N256 {
         let ret: List<Bit>;
         for (let i = 0; i < 32; i++) {
-            ret = ret.concat(this.memory.get(index.toString()).value || [0,0,0,0,0,0,0,0]).toList();
+            ret = ret.concat(this.memory.get(index.toBinary()).value || [0,0,0,0,0,0,0,0]).toList();
         }
         return new N256(ret);
     }
 
-    toString = (): string => {
+    log = (): string => {
+        console.error('!!!!!!!');
         let ret = '[ ';
         const highest = this.highest;
         for (let i = 0; i < highest.toNumber(); i++) {

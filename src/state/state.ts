@@ -3,6 +3,7 @@ import { Stack, emptyStack, stackToString } from './stack';
 import { Storage, emptyStorage, storageToString } from './storage';
 import { Memory } from './memory';
 import { N256 } from '../lib/N256';
+import { N8 } from '../lib/N8';
 
 interface StateInterface {
   code: Buffer;
@@ -81,6 +82,10 @@ export class State extends Record<StateInterface>({
     return this.get('storage').get(address.toBinary()) || new N256();
   }
 
+  setMemoryByteAt(address: N256, byte: N8): State {
+    return this.set('memory', this.memory.storeByte(address, byte));
+  }
+
   setMemoryAt(address: N256, value: N256): State {
     return this.set('memory', this.memory.store(address, value));
   }
@@ -103,7 +108,9 @@ export class State extends Record<StateInterface>({
   */
 
   toString(): string {
+    console.log(this.memory.log());
+    const memStr = this.memory.toString();
     return `PC: ${this.programCounter}, running: ${this.running}, \
-stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, memory: ${this.memory.toString()}, gasUsed: ${this.gasUsed}`;
+stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, memory: ${memStr}, gasUsed: ${this.gasUsed}`;
   }
 }
