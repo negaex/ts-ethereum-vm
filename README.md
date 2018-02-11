@@ -1,7 +1,9 @@
 Typescript EVM (Ethereum Virtual Machine)
 =========================================
 
-This is a very early WIP, and it's sole purpose is as a learning exercise.
+**This is a very early WIP, and it's sole purpose is as a learning exercise.**
+
+The OpCode behaviour is implemented in [operations.ts](https://github.com/***REMOVED***/ts-ethereum-vm/blob/master/src/run/operations.ts).
 
 References
 ----------
