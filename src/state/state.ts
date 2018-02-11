@@ -1,6 +1,7 @@
 import { Record } from '../lib/record';
 import { Stack, emptyStack, stackToString } from './stack';
 import { Storage, emptyStorage, storageToString } from './storage';
+import { Memory } from './memory';
 import { N256 } from '../lib/N256';
 
 interface StateInterface {
@@ -10,6 +11,7 @@ interface StateInterface {
   stack: Stack;
   storage: Storage;
   gasUsed: number;
+  memory: Memory;
 }
 
 export class State extends Record<StateInterface>({
@@ -19,6 +21,7 @@ export class State extends Record<StateInterface>({
   stack: emptyStack,
   storage: emptyStorage,
   gasUsed: 0,
+  memory: new Memory(),
 }) {
 
   // Code
@@ -78,6 +81,14 @@ export class State extends Record<StateInterface>({
     return this.get('storage').get(address.toBinary()) || new N256();
   }
 
+  setMemoryAt(address: N256, value: N256): State {
+    return this.set('memory', this.memory.store(address, value));
+  }
+
+  getMemoryAt(address: N256): N256 {
+    return this.memory.retrieve(address);
+  }
+
   // Gas
   useGas(gas: number): State {
     return this.set('gasUsed', this.get('gasUsed') + gas);
@@ -93,6 +104,6 @@ export class State extends Record<StateInterface>({
 
   toString(): string {
     return `PC: ${this.programCounter}, running: ${this.running}, \
-stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, gasUsed: ${this.gasUsed}`;
+stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, memory: ${this.memory.toString()}, gasUsed: ${this.gasUsed}`;
   }
 }

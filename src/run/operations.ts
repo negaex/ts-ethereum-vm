@@ -69,6 +69,49 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     return state.pushStack(state.storedAt(fst));
   },
 
+  MSTORE: (state: State): State => {
+    const fst = state.stackFirst(); state = state.popStack();
+    const snd = state.stackFirst(); state = state.popStack();
+    return state.setMemoryAt(fst, snd);
+  },
+
+  MLOAD: (state: State): State => {
+    const fst = state.stackFirst(); state = state.popStack();
+    return state.pushStack(state.getMemoryAt(fst));
+  },
+
+  CALLVALUE: (state: State): State => {
+    // TODO!!!
+    return state.pushStack(new N256(0));
+  },
+
+  ISZERO: (state: State): State => {
+    const fst = state.stackFirst(); state = state.popStack();
+    return state.pushStack(fst.isZero() ? new N256(0) : new N256(1)); 
+  },
+
+  JUMPI: (state: State): State => {
+    const fst = state.stackFirst(); state = state.popStack();
+    const snd = state.stackFirst(); state = state.popStack();
+    if (snd.isZero()) {
+      state = state.set('programCounter', fst.toNumber());
+    }
+    return state;
+  },
+
+  JUMPDEST: (state: State): State => {
+    return state;
+  },
+
+  CODECOPY: (state: State): State => {
+    // TODO!!!
+    return state;
+  },
+
+  RETURN: (state: State): State => {
+    return state.stop();
+  },
+
   POP: (state: State): State => {
     return state.popStack();
   },

@@ -3,7 +3,7 @@ import { List } from 'immutable';
 
 type N256Value = List<Bit>;
 type N256Param = number | N256 | N256Value;
-type Bit = 0 | 1;
+export type Bit = 0 | 1;
 
 const pad = (arr: N256Value): N256Value => {
   arr = arr.slice(Math.max(0, arr.size - 256)).toList();
