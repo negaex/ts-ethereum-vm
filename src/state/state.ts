@@ -71,11 +71,11 @@ export class State extends Record<StateInterface>({
 
   // Storage
   storeAt(address: N256, value: N256): State {
-    return this.set('storage', this.storage.set(address, value));
+    return this.set('storage', this.storage.set(address.toBinary(), value));
   }
 
   storedAt(address: N256): N256 {
-    return this.get('storage').get(address) || new N256();
+    return this.get('storage').get(address.toBinary()) || new N256();
   }
 
   // Gas

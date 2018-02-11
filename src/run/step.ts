@@ -14,7 +14,7 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
     operation = (operations[opName] as Operation);
   }
   if (!operation) {
-    throw new VMError(`Operation not implemented: //${opcode.mnemonic}\\`);
+    throw new VMError(`Operation not implemented: //${opcode.mnemonic}\\ (0x${opcode.code.toString(16)})`);
   }
 
   if (log) {

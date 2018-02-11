@@ -1,6 +1,5 @@
 
 import { List } from 'immutable';
-import BigNumber from 'bignumber.js';
 
 type N256Value = List<Bit>;
 type N256Param = number | N256 | N256Value;
