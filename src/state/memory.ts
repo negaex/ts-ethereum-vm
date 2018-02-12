@@ -19,36 +19,35 @@ export class Memory extends Record<MemoryInterface>({
 
     store(index: N256, value: N256): Memory {
         const values: N8[] = fromN256(value);
-        let newThis: Memory = this;
+        let newThis = this;
         let gas = 0;
         for (let i = 0; i < values.length; i++) {
-            newThis = this.set('memory', this.memory.set(index.toBinary(), values[i]));
+            newThis = newThis.set('memory', this.memory.set(index.toBinary(), values[i]));
             index = index.add(1);
         }
         // Todo: should be aligned to %32
         if (index.greaterThan(this.highest)) {
-            newThis = this.set('highest', index);
+            newThis = newThis.set('highest', index);
         }
         // Todo: calculate gas
         return newThis;
     }
 
     retrieve(index: N256): N256 {
-        let ret: List<Bit>;
+        let ret: List<Bit> = List<Bit>();
         for (let i = 0; i < 32; i++) {
-            ret = ret.concat(this.memory.get(index.toBinary()).value || [0,0,0,0,0,0,0,0]).toList();
+            ret = ret.concat((this.memory.get(index.toBinary()) || new N8()).value).toList();
         }
         return new N256(ret);
     }
 
-    log = (): string => {
-        console.error('!!!!!!!');
+    log(): string {
         let ret = '[ ';
         const highest = this.highest;
         for (let i = 0; i < highest.toNumber(); i++) {
-            ret += `0x${this.retrieve(new N256(i)).toNumber().toString(16)}`;
+            ret += ` ${(this.memory.get(new N256(i).toBinary()) || new N8()).toHex()}`;
         }
         ret += ']';
         return ret;
-    };
+    }
 }

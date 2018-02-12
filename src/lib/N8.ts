@@ -29,4 +29,12 @@ export class N8 {
       this.value = pad(num, 8);
     }
   }
+
+  toHex(): string {
+    let ret = parseInt(this.value.join(''), 2).toString(16);
+    if (ret.length === 1) {
+      ret = '0' + ret;
+    }
+    return ret;
+  }
 }

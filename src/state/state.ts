@@ -4,6 +4,7 @@ import { Storage, emptyStorage, storageToString } from './storage';
 import { Memory } from './memory';
 import { N256 } from '../lib/N256';
 import { N8 } from '../lib/N8';
+import { highlight } from '../errors';
 
 interface StateInterface {
   code: Buffer;
@@ -108,9 +109,11 @@ export class State extends Record<StateInterface>({
   */
 
   toString(): string {
-    console.log(this.memory.log());
-    const memStr = this.memory.toString();
-    return `PC: ${this.programCounter}, running: ${this.running}, \
-stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, memory: ${memStr}, gasUsed: ${this.gasUsed}`;
+    // console.log(this.memory.log());
+    const memStr = this.memory.log();
+    return highlight(`//PC\\: ${this.programCounter}, //running\\: ${this.running}, //gasUsed\\: ${this.gasUsed}\n\
+//stack\\: ${stackToString(this.stack)}
+//storage\\: ${storageToString(this.storage)}
+//memory\\: ${memStr}`);
   }
 }

@@ -18,7 +18,7 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
   }
 
   if (log) {
-    process.stdout.write(`${opcode.mnemonic} ==> `);
+    console.log(`─ ${opcode.mnemonic} ${'─'.repeat(process.stdout.columns - 3 - opcode.mnemonic.length)}`);
   }
 
   // Increment program counter
@@ -31,7 +31,7 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
   state = operation(state);
 
   if (log) {
-    console.log(`\t{${state}}`);
+    console.log('\n' + state + '\n' + '─'.repeat(process.stdout.columns));
   }
 
   // Return new state
