@@ -1,9 +1,10 @@
 import { Record } from '../lib/record';
 import { Stack, emptyStack, stackToString } from './stack';
 import { Storage, emptyStorage, storageToString } from './storage';
-import { Memory } from './memory';
-import { N256 } from '../lib/N256';
-import { N8 } from '../lib/N8';
+import { Memory, emptyMemory, memoryToString, setMemoryByteAt, setMemoryAt, getMemoryAt } from './memory';
+import { N256, Bit } from '../lib/N256';
+import { N8, fromN256 } from '../lib/N8';
+import { List } from 'immutable';
 
 interface StateInterface {
   code: Buffer;
@@ -13,6 +14,7 @@ interface StateInterface {
   storage: Storage;
   gasUsed: number;
   memory: Memory;
+  highestMemoryIndex: N256;
 }
 
 export class State extends Record<StateInterface>({
@@ -22,7 +24,8 @@ export class State extends Record<StateInterface>({
   stack: emptyStack,
   storage: emptyStorage,
   gasUsed: 0,
-  memory: new Memory(),
+  memory: emptyMemory,
+  highestMemoryIndex: new N256(),
 }) {
 
   // Code
@@ -82,35 +85,27 @@ export class State extends Record<StateInterface>({
     return this.get('storage').get(address.toBinary()) || new N256();
   }
 
-  setMemoryByteAt(address: N256, byte: N8): State {
-    return this.set('memory', this.memory.storeByte(address, byte));
-  }
-
-  setMemoryAt(address: N256, value: N256): State {
-    return this.set('memory', this.memory.store(address, value));
-  }
-
-  getMemoryAt(address: N256): N256 {
-    return this.memory.retrieve(address);
-  }
-
   // Gas
   useGas(gas: number): State {
     return this.set('gasUsed', this.get('gasUsed') + gas);
   }
 
-  /*
-  programCounter: 0,
-  running: true,
-  stack: emptyStack,
-  code: Buffer.from([]),
-  storage: emptyStorage,
-  */
+  setMemoryByteAt(address: N256, byte: N8): State {
+    return this.set('memory', setMemoryByteAt(this.memory, address, byte));
+  }
+
+  setMemoryAt(address: N256, value: N256): State {
+    return this.set('memory', setMemoryAt(this.memory, address, value));
+  }
+
+  getMemoryAt(address: N256): N256 {
+    return getMemoryAt(this.memory, address);
+  }
 
   toString(): string {
-    console.log(this.memory.log());
-    const memStr = this.memory.toString();
+    const memStr = memoryToString(this.memory);
     return `PC: ${this.programCounter}, running: ${this.running}, \
-stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, memory: ${memStr}, gasUsed: ${this.gasUsed}`;
+stack: ${stackToString(this.stack)}, storage: ${storageToString(this.storage)}, \
+memory: ${memStr}, gasUsed: ${this.gasUsed}`;
   }
 }

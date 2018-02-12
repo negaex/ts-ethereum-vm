@@ -2,53 +2,38 @@ import { Record } from '../lib/record';
 import { Map, List } from 'immutable';
 import { Bit, N256 } from '../lib/N256';
 import { N8, fromN256 } from '../lib/N8';
+import { State } from './state';
 
-interface MemoryInterface {
-    memory: Map<string, N8>;
-    highest: N256;
-  }
-  
-export class Memory extends Record<MemoryInterface>({
-    memory: Map<string, N8>(),
-    highest: new N256(0),
-  }) {
+export type Memory = Map<string, N8>;
 
-    storeByte(index: N256, value: N8): Memory {
-        return this.set('memory', this.memory.set(index.toBinary(), value));
+export const emptyMemory = Map<string, N8>();
+
+export const setMemoryByteAt = (memory: Memory, address: N256, byte: N8): Memory => {
+    return memory.set(address.toBinary(), byte);
+};
+
+export const setMemoryAt = (memory: Memory, address: N256, value: N256): Memory => {
+    // return this.set('memory', this.memory.store(address, value));
+    const values: N8[] = fromN256(value);
+    for (let i = 0; i < values.length; i++) {
+        memory = memory.set(address.toBinary(), values[i]);
+        address = address.add(1);
     }
+    // Todo: calculate gas
+    return memory;
+};
 
-    store(index: N256, value: N256): Memory {
-        const values: N8[] = fromN256(value);
-        let newThis: Memory = this;
-        let gas = 0;
-        for (let i = 0; i < values.length; i++) {
-            newThis = this.set('memory', this.memory.set(index.toBinary(), values[i]));
-            index = index.add(1);
-        }
-        // Todo: should be aligned to %32
-        if (index.greaterThan(this.highest)) {
-            newThis = this.set('highest', index);
-        }
-        // Todo: calculate gas
-        return newThis;
+export const getMemoryAt = (memory: Memory, address: N256): N256 => {
+    let ret: List<Bit> = List();
+    for (let i = 0; i < 32; i++) {
+      ret = ret.concat((memory.get(address.toBinary()) || new N8()).value).toList();
     }
+    return new N256(ret);
+};
 
-    retrieve(index: N256): N256 {
-        let ret: List<Bit>;
-        for (let i = 0; i < 32; i++) {
-            ret = ret.concat(this.memory.get(index.toBinary()).value || [0,0,0,0,0,0,0,0]).toList();
-        }
-        return new N256(ret);
-    }
-
-    log = (): string => {
-        console.error('!!!!!!!');
-        let ret = '[ ';
-        const highest = this.highest;
-        for (let i = 0; i < highest.toNumber(); i++) {
-            ret += `0x${this.retrieve(new N256(i)).toNumber().toString(16)}`;
-        }
-        ret += ']';
-        return ret;
-    };
+export function memoryToString(memory: Memory, ): string {
+    let ret = '[';
+    ret += memory.reduce((r, n8) => r + ' ' + new N256(n8.value).toNumber().toString(16), '');
+    ret += ' ]';
+    return ret;
 }
