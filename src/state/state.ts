@@ -83,13 +83,16 @@ export class State extends Record<StateInterface>({
   }
 
   popStack(): [N256, State] {
-    if (this.stack.first() === undefined) {
+    if (this.get('stack').size === 0) {
       throw new VMError('Stack underflow');
     }
     return [this.stack.first(), this.set('stack', this.stack.delete(0))];
   }
 
   pushStack(value: N256): State {
+    if (this.get('stack').size === 1023) {
+      throw new VMError('Stack overflow');
+    }
     return this.set('stack', this.stack.insert(0, value));
   }
 
