@@ -18,19 +18,20 @@ export class Memory extends Record<MemoryInterface>({
     }
 
     store(index: N256, value: N256): Memory {
+        let memory = this.memory;
         const values: N8[] = fromN256(value);
-        let newThis = this;
         let gas = 0;
         for (let i = 0; i < values.length; i++) {
-            newThis = newThis.set('memory', this.memory.set(index.toBinary(), values[i]));
+            memory = memory.set(index.toBinary(), values[i]);
             index = index.add(1);
         }
+        let highest = this.highest;
         // Todo: should be aligned to %32
         if (index.greaterThan(this.highest)) {
-            newThis = newThis.set('highest', index);
+            highest = index;
         }
         // Todo: calculate gas
-        return newThis;
+        return this.set('memory', memory).set('highest', highest);
     }
 
     retrieveBytes(index: N256, length: N256): Buffer {
