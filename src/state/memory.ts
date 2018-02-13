@@ -33,21 +33,31 @@ export class Memory extends Record<MemoryInterface>({
         return newThis;
     }
 
+    retrieveBytes(index: N256, length: N256): Buffer {
+        let ret: List<number> = List<number>();
+        for (let i = new N256(0); i.lessThan(length); i = i.add(1)) {
+            ret = ret.concat((this.memory.get(index.toBinary()) || new N8()).toNumber()).toList();
+            index = index.add(1);
+        }
+        return new Buffer(ret.toArray());
+    }
+
     retrieve(index: N256): N256 {
         let ret: List<Bit> = List<Bit>();
         for (let i = 0; i < 32; i++) {
             ret = ret.concat((this.memory.get(index.toBinary()) || new N8()).value).toList();
+            index = index.add(1);
         }
         return new N256(ret);
     }
 
     log(): string {
-        let ret = '[ ';
+        let ret = '[';
         const highest = this.highest;
         for (let i = 0; i < highest.toNumber(); i++) {
             ret += ` ${(this.memory.get(new N256(i).toBinary()) || new N8()).toHex()}`;
         }
-        ret += ']';
+        ret += ' ]';
         return ret;
     }
 }

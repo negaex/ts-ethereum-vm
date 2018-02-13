@@ -30,6 +30,10 @@ export class N8 {
     }
   }
 
+  toNumber(): number {
+    return parseInt(this.value.join(''), 2);
+  }
+
   toHex(): string {
     let ret = parseInt(this.value.join(''), 2).toString(16);
     if (ret.length === 1) {

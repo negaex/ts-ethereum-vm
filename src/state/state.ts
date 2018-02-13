@@ -14,6 +14,8 @@ interface StateInterface {
   storage: Storage;
   gasUsed: number;
   memory: Memory;
+  logInfo: string;
+  returnValue: Buffer;
 }
 
 export class State extends Record<StateInterface>({
@@ -24,7 +26,15 @@ export class State extends Record<StateInterface>({
   storage: emptyStorage,
   gasUsed: 0,
   memory: new Memory(),
+  logInfo: '',
+  returnValue: null,
+
 }) {
+
+  // Return
+  setReturnValue(value: Buffer): State {
+    return this.set('returnValue', value);
+  }
 
   // Code
   loadCode(code: Buffer): State {
@@ -95,9 +105,21 @@ export class State extends Record<StateInterface>({
     return this.memory.retrieve(address);
   }
 
+  getMemoryAsBuffer(address: N256, length: N256): Buffer {
+    return this.memory.retrieveBytes(address, length);
+  }
+
   // Gas
   useGas(gas: number): State {
     return this.set('gasUsed', this.get('gasUsed') + gas);
+  }
+
+  setLogInfo(info: string): State {
+    return this.set('logInfo', info);
+  }
+
+  appendLogInfo(info: string): State {
+    return this.set('logInfo', this.logInfo + info);
   }
 
   /*
