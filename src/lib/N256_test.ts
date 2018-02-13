@@ -64,4 +64,8 @@ describe('N256', () => {
     (new N256(0)).exp(0).toNumber().should.equal(1);
   });
 
+  it('can load buffer', () => {
+    (new N256(new Buffer([0x01, 0x02])).toNumber()).should.equal(258);
+  });
+
 });

@@ -1,9 +1,10 @@
 
 import { List } from 'immutable';
+import { N8 } from './N8';
 
 export type Bit = 0 | 1;
 export type BitList = List<Bit>;
-type N256Param = number | N256 | BitList;
+type N256Param = number | N256 | BitList | Buffer;
 
 export const pad = (arr: BitList, length: number): BitList => {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
@@ -15,6 +16,15 @@ export const fromNum = (bin: number, length: number): BitList => {
   const arr = bin.toString(2).split('').map(x => (x === '0') ? 0 : 1);
   // console.log(arr);
   return pad(List(arr), length);
+};
+
+const fromBuffer = (buff: Buffer): BitList => {
+  let arr: List<Bit> = List<Bit>();
+  for (let i = 0; i < buff.length; i++) {
+    arr = arr.concat(new N8(buff[i]).value).toList();
+    // arr = List<N8>([new N8(buff[i])]).concat(arr).toList();
+  } 
+  return pad(arr, 256);
 };
 
 /**
@@ -37,6 +47,8 @@ export class N256 {
     } else if (typeof num === 'number') {
       // number
       this.value = fromNum(num, 256);
+    } else if (num instanceof Buffer) {
+      this.value = fromBuffer(num);
     } else {
       // N256Value
       this.value = pad(num, 256);
