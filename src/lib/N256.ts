@@ -12,18 +12,27 @@ export const pad = (arr: BitList, length: number): BitList => {
   return List(new Array(diff).fill(0)).push(...arr.toArray());
 };
 
+export const padRight = (arr: BitList, length: number): BitList => {
+  arr = arr.slice(Math.max(0, arr.size - length)).toList();
+  const diff = length - arr.size;
+  return arr.concat(List(new Array(diff).fill(0))).toList();
+};
+
 export const fromNum = (bin: number, length: number): BitList => {
   const arr = bin.toString(2).split('').map(x => (x === '0') ? 0 : 1);
   // console.log(arr);
   return pad(List(arr), length);
 };
 
-const fromBuffer = (buff: Buffer): BitList => {
+export const fromBuffer = (buff: Buffer, rightPadding: boolean = false): BitList => {
   let arr: List<Bit> = List<Bit>();
   for (let i = 0; i < buff.length; i++) {
     arr = arr.concat(new N8(buff[i]).value).toList();
     // arr = List<N8>([new N8(buff[i])]).concat(arr).toList();
-  } 
+  }
+  if (rightPadding) {
+    return padRight(arr, 256);
+  }
   return pad(arr, 256);
 };
 

@@ -1,6 +1,6 @@
 
 import { State } from '../state/state';
-import { N256 } from '../lib/N256';
+import { N256, fromBuffer } from '../lib/N256';
 import { N8 } from '../lib/N8';
 const keccak = require('keccak');
 
@@ -108,7 +108,8 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
 
   CALLDATALOAD: (state: State): State => {
     let fst; [fst, state] = state.popStack();
-    return state.pushStack(new N256(state.getCallData().length));
+    const data = state.getCallData().slice(fst.toNumber(), fst.add(32).toNumber());
+    return state.pushStack(new N256(fromBuffer(data, true)));
   },
 
   CALLVALUE: (state: State): State => {

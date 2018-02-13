@@ -4,7 +4,7 @@ import { Storage, emptyStorage, storageToString } from './storage';
 import { Memory } from './memory';
 import { N256 } from '../lib/N256';
 import { N8 } from '../lib/N8';
-import { highlight } from '../errors';
+import { highlight, VMError } from '../errors';
 
 interface StateInterface {
   code: Buffer;
@@ -83,6 +83,9 @@ export class State extends Record<StateInterface>({
   }
 
   popStack(): [N256, State] {
+    if (this.stack.first() === undefined) {
+      throw new VMError('Stack underflow');
+    }
     return [this.stack.first(), this.set('stack', this.stack.delete(0))];
   }
 
