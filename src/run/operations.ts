@@ -2,6 +2,7 @@
 import { State } from '../state/state';
 import { N256 } from '../lib/N256';
 import { N8 } from '../lib/N8';
+const keccak = require('keccak');
 
 export type Operation = (state: State) => State;
 export type DynamicOp = (param: number) => Operation;
@@ -67,6 +68,14 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
+  /* comparisons */
+  LT: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.lessThan(snd) ? new N256(1) : new N256(0))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
   SSTORE: (state: State): State => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
@@ -91,6 +100,15 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(state.getMemoryAt(fst))
     .appendLogInfo(`(${fst.toNumber()})`);
+  },
+
+  CALLDATASIZE: (state: State): State => {
+    return state.pushStack(new N256(state.getCallData().length));
+  },
+
+  CALLDATALOAD: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    return state.pushStack(new N256(state.getCallData().length));
   },
 
   CALLVALUE: (state: State): State => {
@@ -155,6 +173,10 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     return state.appendLogInfo('()');
   },
 
+  CALLER: (state: State): State => {
+    return state.pushStack(state.caller);
+  },
+
   /* DYNAMIC */
 
   PUSH: (param: number) => (state: State): State => {
@@ -198,5 +220,19 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     return state
     .appendLogInfo(`(${values[values.length - 1]})`);
   },
+
+  SHA: (param: number) => (state: State): State => {
+    switch (param) {
+      case 3:
+        let fst; [fst, state] = state.popStack();
+        let snd; [snd, state] = state.popStack();
+        const mem: Buffer = state.getMemoryAsBuffer(fst, snd);
+        const sha3: Buffer = keccak('keccak256').update(mem).digest();
+        const n256 = new N256(sha3);
+        return state.pushStack(n256);
+      default:
+        throw '...';
+    }
+  }
 
 };

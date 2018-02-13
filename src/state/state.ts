@@ -16,6 +16,8 @@ interface StateInterface {
   memory: Memory;
   logInfo: string;
   returnValue: Buffer;
+  caller: N256;
+  callData: Buffer;
 }
 
 export class State extends Record<StateInterface>({
@@ -28,8 +30,21 @@ export class State extends Record<StateInterface>({
   memory: new Memory(),
   logInfo: '',
   returnValue: null,
-
+  caller: new N256(0),
+  callData: null,
 }) {
+
+  getCallData(): Buffer {
+    return this.callData;
+  }
+
+  setCallData(callData: Buffer): State {
+    return this.set('callData', callData);
+  }
+
+  setCaller(caller: N256): State {
+    return this.set('caller', caller);
+  }
 
   // Return
   setReturnValue(value: Buffer): State {

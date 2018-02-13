@@ -9,7 +9,11 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
   const [_, opName, opParam] = regex.exec(opcode.mnemonic);
   let operation: Operation;
   if (opParam) {
-    operation = (operations[opName] as DynamicOp)(parseInt(opParam, 10));
+    const dynamic = (operations[opName] as DynamicOp);
+    if (!dynamic) {
+      throw new VMError(`Parameterd operation not implemented: //${opcode.mnemonic}\\ (0x${opcode.code.toString(16)})`);
+    }
+    operation = dynamic(parseInt(opParam, 10));
   } else {
     operation = (operations[opName] as Operation);
   }
