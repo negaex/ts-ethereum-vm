@@ -103,7 +103,7 @@ for (let i = 0; i < 33; i++) {
 }
 
 // duplicate and swap
-for (let i = 0; i < 17; i++) {
+for (let i = 1; i < 17; i++) {
   instructions[0x7f + i] = { mnemonic: `DUP${i}`, pop: i, push: i + 1, gas: 3, code: 0x7f + i };
   instructions[0x8f + i] = { mnemonic: `SWAP${i}`, pop: i + 1, push: i + 1, gas: 3, code: 0x8f + i };
 }
