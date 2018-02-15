@@ -111,7 +111,7 @@ const skipVM = [
 ];
 
 function getSkipTests (choices: any) {
-  let skipTests = [];
+  let skipTests: any = [];
   choices = choices.toLowerCase();
   if (choices !== 'none') {
     let choicesList = choices.split(',');
@@ -129,7 +129,7 @@ function getSkipTests (choices: any) {
   return skipTests;
 }
 
-const tests = [];
+const tests: any = [];
 describe('EthereumJS', () => {
   before(async () => {
 
@@ -147,7 +147,7 @@ describe('EthereumJS', () => {
     console.log(setName);
     await testing.getTestsFromArgs(
       setName,
-      (fileName, testName, test) => {
+      (fileName: any, testName: any, test: any) => {
         return new Promise(
           (resolve, reject) => {
             // console.log(`file: ${fileName} test: ${testName}`);

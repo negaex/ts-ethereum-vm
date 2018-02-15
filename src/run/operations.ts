@@ -201,6 +201,18 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     return state.pushStack(state.getCoinbase());
   },
 
+  BLOCKHASH: (state: State): State => {
+    return state.pushStack(state.getBlockhash());
+  },
+
+  DIFFICULTY: (state: State): State => {
+    return state.pushStack(state.getDifficulty());
+  },
+
+  GASLIMIT: (state: State): State => {
+    return state.pushStack(state.getGasLimit());
+  },
+
   /* DYNAMIC */
 
   PUSH: (param: number) => (state: State): State => {

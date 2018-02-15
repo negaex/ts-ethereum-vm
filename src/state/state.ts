@@ -22,6 +22,9 @@ interface StateInterface {
   timestamp: N256;
   blocknumber: N256;
   coinbase: N256;
+  blockhash: N256;
+  difficulty: N256;
+  gaslimit: N256;
 }
 
 export class State extends Record<StateInterface>({
@@ -40,6 +43,9 @@ export class State extends Record<StateInterface>({
   timestamp: new N256(0),
   blocknumber: new N256(0),
   coinbase: new N256(0),
+  blockhash: new N256(0),
+  difficulty: new N256(0),
+  gaslimit: new N256(0),
 }) {
 
   getCallData(): Buffer {
@@ -64,6 +70,18 @@ export class State extends Record<StateInterface>({
 
   getCoinbase(): N256 {
     return this.get('coinbase');
+  }
+
+  getBlockhash(): N256 {
+    return this.get('blockhash');
+  }
+
+  getDifficulty(): N256 {
+    return this.get('difficulty');
+  }
+
+  getGasLimit(): N256 {
+    return this.get('gaslimit');
   }
 
   // Return
