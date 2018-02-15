@@ -5,7 +5,7 @@ import { State } from '../src/state/state';
 
 export const runCode = (code: string, calldata: string, log: boolean = false): State => {
     const binary = assemble(code);
-    const binaryData = Buffer.from(calldata, 'hex');
+    const binaryData = assemble(calldata);
     const initialState = new State().loadCode(binary).setCallData(binaryData);
     if (log) {
       console.log(`Running code: ${binary.toString('hex')}`);
