@@ -17,7 +17,11 @@ interface StateInterface {
   logInfo: string;
   returnValue: Buffer;
   caller: N256;
+  address: N256;
   callData: Buffer;
+  timestamp: N256;
+  blocknumber: N256;
+  coinbase: N256;
 }
 
 export class State extends Record<StateInterface>({
@@ -31,7 +35,11 @@ export class State extends Record<StateInterface>({
   logInfo: '',
   returnValue: null,
   caller: new N256(0),
+  address: new N256(0),
   callData: null,
+  timestamp: new N256(0),
+  blocknumber: new N256(0),
+  coinbase: new N256(0),
 }) {
 
   getCallData(): Buffer {
@@ -44,6 +52,18 @@ export class State extends Record<StateInterface>({
 
   setCaller(caller: N256): State {
     return this.set('caller', caller);
+  }
+
+  getTimestamp(): N256 {
+    return this.get('timestamp');
+  }
+
+  getBlockNumber(): N256 {
+    return this.get('blocknumber');
+  }
+
+  getCoinbase(): N256 {
+    return this.get('coinbase');
   }
 
   // Return

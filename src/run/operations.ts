@@ -69,6 +69,13 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
 
   /* comparisons */
+  EQ: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.equals(snd) ? new N256(1) : new N256(0))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
   LT: (state: State): State => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
@@ -176,6 +183,22 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
 
   CALLER: (state: State): State => {
     return state.pushStack(state.caller);
+  },
+
+  ADDRESS: (state: State): State => {
+    return state.pushStack(state.address);
+  },
+
+  TIMESTAMP: (state: State): State => {
+    return state.pushStack(state.getTimestamp());
+  },
+
+  NUMBER: (state: State): State => {
+    return state.pushStack(state.getBlockNumber());
+  },
+
+  COINBASE: (state: State): State => {
+    return state.pushStack(state.getCoinbase());
   },
 
   /* DYNAMIC */
