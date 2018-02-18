@@ -1,6 +1,6 @@
 
 import { VMState } from '../state/state';
-import { N256, fromBuffer } from '../lib/N256';
+import { N256, fromBuffer, Ox0 } from '../lib/N256';
 import { N8 } from '../lib/N8';
 const keccak = require('keccak');
 
@@ -101,35 +101,35 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   EQ: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.equals(snd) ? new N256(1) : new N256(0))
+    return state.pushStack(fst.equals(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   LT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.lessThan(snd) ? new N256(1) : new N256(0))
+    return state.pushStack(fst.lessThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   SLT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.signedLessThan(snd) ? new N256(1) : new N256(0))
+    return state.pushStack(fst.signedLessThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   GT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.greaterThan(snd) ? new N256(1) : new N256(0))
+    return state.pushStack(fst.greaterThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   SGT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.signedGreaterThan(snd) ? new N256(1) : new N256(0))
+    return state.pushStack(fst.signedGreaterThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
@@ -171,12 +171,12 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
 
   CALLVALUE: (state: VMState): VMState => {
     // TODO!!!
-    return state.pushStack(new N256(0));
+    return state.pushStack(Ox0);
   },
 
   ISZERO: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
-    return state.pushStack(fst.isZero() ? new N256(0) : new N256(1))
+    return state.pushStack(fst.isZero() ? Ox0 : new N256(1))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
@@ -208,7 +208,7 @@ ${codeOffset}, \
 ${length}): \
 ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toString('hex')}`);
 
-    for (let i = new N256(0); i.lessThanOrEqual(length); i = i.add(1)) {
+    for (let i = Ox0; i.lessThanOrEqual(length); i = i.add(1)) {
       state = state.setMemoryByteAt(memOffset, new N8(state.code[codeOffset.toNumber()]));
       memOffset = memOffset.add(1);
       codeOffset = codeOffset.add(1);

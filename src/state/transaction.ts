@@ -1,5 +1,5 @@
 import { Record } from '../lib/record';
-import { N256 } from '../lib/N256';
+import { N256, Ox0 } from '../lib/N256';
 import { Account } from './account';
 
 interface TransactionInterface {
@@ -12,11 +12,11 @@ interface TransactionInterface {
 }
 
 export class Transaction extends Record<TransactionInterface>({
-  nonce: new N256(0),
-  gasPrice: new N256(0),
-  gasLimit: new N256(0),
-  to: new N256(0),
-  value: new N256(0),
+  nonce: Ox0,
+  gasPrice: Ox0,
+  gasLimit: Ox0,
+  to: Ox0,
+  value: Ox0,
   data: Buffer.from([]),
 }) {}
 

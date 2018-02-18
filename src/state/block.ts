@@ -1,9 +1,8 @@
 import { Record } from '../lib/record';
-import { N256 } from '../lib/N256';
+import { N256, Ox0 } from '../lib/N256';
 import { Transaction } from './transaction';
 import { List } from 'immutable';
-
-const Ox0 = new N256(0);
+import { VMState } from './state';
 
 interface BlockInterface {
   parentHash: N256;

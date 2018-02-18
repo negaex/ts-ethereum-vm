@@ -1,5 +1,5 @@
 import { Record } from '../lib/record';
-import { N256 } from '../lib/N256';
+import { N256, Ox0 } from '../lib/N256';
 import { Storage, emptyStorage } from './storage';
 
 interface AccountInterface {
@@ -11,9 +11,9 @@ interface AccountInterface {
 }
 
 export class Account extends Record<AccountInterface>({
-  address: new N256(0),
-  nonce: new N256(0),
-  balance: new N256(0),
+  address: Ox0,
+  nonce: Ox0,
+  balance: Ox0,
   storage: emptyStorage,
   code: Buffer.from([]),
 }) {

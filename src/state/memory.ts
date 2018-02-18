@@ -1,6 +1,6 @@
 import { Record } from '../lib/record';
 import { Map, List } from 'immutable';
-import { Bit, N256 } from '../lib/N256';
+import { Bit, N256, Ox0 } from '../lib/N256';
 import { N8, fromN256 } from '../lib/N8';
 
 interface MemoryInterface {
@@ -10,7 +10,7 @@ interface MemoryInterface {
   
 export class Memory extends Record<MemoryInterface>({
     memory: Map<string, N8>(),
-    highest: new N256(0),
+    highest: Ox0,
   }) {
 
     storeByte(index: N256, value: N8): Memory {
@@ -36,7 +36,7 @@ export class Memory extends Record<MemoryInterface>({
 
     retrieveBytes(index: N256, length: N256): Buffer {
         let ret: List<number> = List<number>();
-        for (let i = new N256(0); i.lessThan(length); i = i.add(1)) {
+        for (let i = Ox0; i.lessThan(length); i = i.add(1)) {
             ret = ret.concat((this.memory.get(index.toBinary()) || new N8()).toNumber()).toList();
             index = index.add(1);
         }

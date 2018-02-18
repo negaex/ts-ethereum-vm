@@ -221,13 +221,13 @@ export class N256 {
     let dividend = new N256(this);
     let denom = new N256(other); // divisor
     let current = new N256(1);
-    let answer = new N256(0);
+    let answer = Ox0;
 
     if (denom.isZero()) {
-      return new N256(0);
+      return Ox0;
     }
 
-    const limit = new N256(0).not().shiftRight(1);
+    const limit = Ox0.not().shiftRight(1);
     let overflowed = false;
     while (denom.lessThanOrEqual(dividend)) {
       if (denom.greatherThanOrEqual(limit)) {
@@ -339,3 +339,5 @@ export class N256 {
     }
   }
 }
+
+export const Ox0 = new N256(0);

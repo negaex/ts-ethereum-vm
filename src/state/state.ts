@@ -2,7 +2,7 @@ import { Record } from '../lib/record';
 import { Stack, emptyStack, stackToString } from './stack';
 import { Storage, emptyStorage, storageToString } from './storage';
 import { Memory } from './memory';
-import { N256 } from '../lib/N256';
+import { N256, Ox0 } from '../lib/N256';
 import { N8 } from '../lib/N8';
 import { highlight, VMError } from '../errors';
 
@@ -37,15 +37,15 @@ export class VMState extends Record<VMStateInterface>({
   memory: new Memory(),
   logInfo: '',
   returnValue: null,
-  caller: new N256(0),
-  address: new N256(0),
+  caller: Ox0,
+  address: Ox0,
   callData: null,
-  timestamp: new N256(0),
-  blocknumber: new N256(0),
-  coinbase: new N256(0),
-  blockhash: new N256(0),
-  difficulty: new N256(0),
-  gaslimit: new N256(0),
+  timestamp: Ox0,
+  blocknumber: Ox0,
+  coinbase: Ox0,
+  blockhash: Ox0,
+  difficulty: Ox0,
+  gaslimit: Ox0,
 }) {
 
   getCallData(): Buffer {
@@ -198,3 +198,5 @@ export class VMState extends Record<VMStateInterface>({
 //memory\\: ${memStr}`);
   }
 }
+
+const emptyVMState = new VMState();
