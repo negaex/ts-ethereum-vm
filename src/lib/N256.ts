@@ -4,7 +4,7 @@ import { N8 } from './N8';
 
 export type Bit = 0 | 1;
 export type BitList = List<Bit>;
-type N256Param = number | N256 | BitList | Buffer;
+type N256Param = number | N256 | BitList | Buffer | string;
 
 export const pad = (arr: BitList, length: number): BitList => {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
@@ -18,10 +18,14 @@ export const padRight = (arr: BitList, length: number): BitList => {
   return arr.concat(List(new Array(diff).fill(0))).toList();
 };
 
-export const fromNum = (bin: number, length: number): BitList => {
-  const arr = bin.toString(2).split('').map(x => (x === '0') ? 0 : 1);
+export const fromString = (bin: string, length: number): BitList => {
+  const arr = bin.split('').map(x => (x === '0') ? 0 : 1);
   // console.log(arr);
   return pad(List(arr), length);
+};
+
+export const fromNum = (bin: number, length: number): BitList => {
+  return fromString(bin.toString(2), length);
 };
 
 export const fromBuffer = (buff: Buffer, rightPadding: boolean = false): BitList => {
@@ -58,6 +62,8 @@ export class N256 {
       this.value = fromNum(num, 256);
     } else if (num instanceof Buffer) {
       this.value = fromBuffer(num);
+    } else if (typeof num === 'string') {
+      this.value = fromString(num, 256);
     } else {
       // N256Value
       this.value = pad(num, 256);
@@ -188,13 +194,25 @@ export class N256 {
     let current = new N256(1);
     let answer = new N256(0);
 
+    if (denom.isZero()) {
+      return new N256(0);
+    }
+
+    const limit = new N256(0).not().shiftRight(1);
+    let flag = false;
     while (denom.lessThanOrEqual(dividend)) {
+      if (denom.greatherThanOrEqual(limit)) {
+        flag = true;
+        break;
+      }
       denom = denom.shiftLeft(1);
       current = current.shiftLeft(1);
     }
 
-    denom = denom.shiftRight(1);
-    current = current.shiftRight(1);
+    if (!flag) {
+      denom = denom.shiftRight(1);
+      current = current.shiftRight(1);
+    }
 
     while (!current.isZero()) {
       if (dividend.greatherThanOrEqual(denom)) {
@@ -219,6 +237,10 @@ export class N256 {
     } else if (other.value.get(255) === 1) {
       return this.mul(this.mul(this).exp(other.sub(1).div(2)));
     }
+  }
+
+  mod(other: N256Param): N256 {
+    return this.sub(this.div(other).mul(other));
   }
 
   not(): N256 {

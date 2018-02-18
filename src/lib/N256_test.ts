@@ -53,6 +53,8 @@ describe('N256', () => {
     ((new N256(5)).div(4)).toNumber().should.equal(1);
     const num = (new N256(2)).exp(27).sub(1);
     (num.exp(2)).div(num).toBinary().should.equal(num.toBinary());
+
+    (new N256(0).not()).div(2).toBinary().should.equal(new N256(2).exp(255).sub(1).toBinary());
   });
 
   it('can exponentiate numbers', () => {
@@ -66,6 +68,10 @@ describe('N256', () => {
 
   it('can load buffer', () => {
     (new N256(new Buffer([0x01, 0x02])).toNumber()).should.equal(258);
+  });
+
+  it('can do mod', () => {
+    (new N256(6)).mod(4).toNumber().should.equal(2);
   });
 
 });
