@@ -1,6 +1,9 @@
 import { Record } from '../lib/record';
 import { N256, Ox0 } from '../lib/N256';
-import { Account } from './account';
+import { Account, Address } from './account';
+import { MachineState, emptyMachineState } from './machinestate';
+import { Storage } from './storage';
+import { Block, emptyBlock } from './block';
 
 interface TransactionInterface {
   nonce: N256;
@@ -9,6 +12,9 @@ interface TransactionInterface {
   to: N256;
   value: N256;
   data: Buffer; // Should be hash of code instead
+  storages: Map<Address, Storage>;
+
+  blockSnapshot: Block;
 }
 
 export class Transaction extends Record<TransactionInterface>({
@@ -18,13 +24,18 @@ export class Transaction extends Record<TransactionInterface>({
   to: Ox0,
   value: Ox0,
   data: Buffer.from([]),
+  storages: new Map<Address, Storage>(),
+  
+  blockSnapshot: emptyBlock,
 }) {}
 
 function newTransaction(from: Account, to: Account, value: N256, data: Buffer) {
   return new Transaction({
     nonce: from.nonce,
-    to: to.getAddress(),
+    to: to.address,
     value: value,
     data: data,
   });
 }
+
+export const emptyTransaction = new Transaction();

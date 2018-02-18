@@ -1,7 +1,7 @@
 // tslint:disable:max-line-length
 
 import { run } from './run/run';
-import { State } from './state/state';
+import { MachineState as State } from './state/machinestate';
 import * as fs from 'fs';
 import { runCode } from '../test/testUtil';
 

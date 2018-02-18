@@ -1,6 +1,6 @@
 
 import { instructions, OpCode } from '../instructions/instructions';
-import { VMState as State } from '../state/state';
+import { MachineState as State } from '../state/machinestate';
 import { operations, Operation } from './operations';
 import { step } from './step';
 import { InvalidBinary } from '../errors';

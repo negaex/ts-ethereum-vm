@@ -1,6 +1,6 @@
 
 import { OpCode } from '../instructions/instructions';
-import { VMState as State } from '../state/state';
+import { MachineState as State } from '../state/machinestate';
 import { operations, Operation, DynamicOp } from './operations';
 import { VMError, highlight } from '../errors';
 

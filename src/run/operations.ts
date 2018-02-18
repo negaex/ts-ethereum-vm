@@ -1,60 +1,60 @@
 
-import { VMState } from '../state/state';
+import { MachineState } from '../state/machinestate';
 import { N256, fromBuffer, Ox0 } from '../lib/N256';
 import { N8 } from '../lib/N8';
 const keccak = require('keccak');
 
-export type Operation = (state: VMState) => VMState;
+export type Operation = (state: MachineState) => MachineState;
 export type DynamicOp = (param: number) => Operation;
 
 export const operations: { [opcode: string]: Operation | DynamicOp } = {
-  STOP: (state: VMState): VMState => {
+  STOP: (state: MachineState): MachineState => {
     return state.stop();
   },
 
-  ADD: (state: VMState): VMState => {
+  ADD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.add(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SUB: (state: VMState): VMState => {
+  SUB: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.sub(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  MUL: (state: VMState): VMState => {
+  MUL: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.mul(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  DIV: (state: VMState): VMState => {
+  DIV: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.div(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  EXP: (state: VMState): VMState => {
+  EXP: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.exp(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  MOD: (state: VMState): VMState => {
+  MOD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.mod(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  ADDMOD: (state: VMState): VMState => {
+  ADDMOD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     let tri; [tri, state] = state.popStack();
@@ -62,14 +62,14 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()}, ${tri.toNumber()})`);
   },
 
-  SDIV: (state: VMState): VMState => {
+  SDIV: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.sdiv(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SMOD: (state: VMState): VMState => {
+  SMOD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.smod(snd))
@@ -77,110 +77,110 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
   
   /* bitwise */
-  AND: (state: VMState): VMState => {
+  AND: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.and(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  OR: (state: VMState): VMState => {
+  OR: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.or(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  NOT: (state: VMState): VMState => {
+  NOT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(fst.not())
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
   /* comparisons */
-  EQ: (state: VMState): VMState => {
+  EQ: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.equals(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  LT: (state: VMState): VMState => {
+  LT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.lessThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SLT: (state: VMState): VMState => {
+  SLT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.signedLessThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  GT: (state: VMState): VMState => {
+  GT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.greaterThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SGT: (state: VMState): VMState => {
+  SGT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.signedGreaterThan(snd) ? new N256(1) : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SSTORE: (state: VMState): VMState => {
+  SSTORE: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.storeAt(fst, snd)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SLOAD: (state: VMState): VMState => {
+  SLOAD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(state.storedAt(fst))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
-  MSTORE: (state: VMState): VMState => {
+  MSTORE: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.setMemoryAt(fst, snd)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  MLOAD: (state: VMState): VMState => {
+  MLOAD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(state.getMemoryAt(fst))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
-  CALLDATASIZE: (state: VMState): VMState => {
-    return state.pushStack(new N256(state.getCallData().length));
+  CALLDATASIZE: (state: MachineState): MachineState => {
+    return state.pushStack(new N256(state.callData.length));
   },
 
-  CALLDATALOAD: (state: VMState): VMState => {
+  CALLDATALOAD: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
-    const data = state.getCallData().slice(fst.toNumber(), fst.add(32).toNumber());
+    const data = state.callData.slice(fst.toNumber(), fst.add(32).toNumber());
     return state.pushStack(new N256(fromBuffer(data, true)));
   },
 
-  CALLVALUE: (state: VMState): VMState => {
+  CALLVALUE: (state: MachineState): MachineState => {
     // TODO!!!
     return state.pushStack(Ox0);
   },
 
-  ISZERO: (state: VMState): VMState => {
+  ISZERO: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(fst.isZero() ? Ox0 : new N256(1))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
-  JUMPI: (state: VMState): VMState => {
+  JUMPI: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     if (snd.isZero()) {
@@ -190,12 +190,12 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  JUMPDEST: (state: VMState): VMState => {
+  JUMPDEST: (state: MachineState): MachineState => {
     // TODO!!! - Mark as a valid jump destination
     return state;
   },
 
-  CODECOPY: (state: VMState): VMState => {
+  CODECOPY: (state: MachineState): MachineState => {
     // TODO!!!
 
     let memOffset; [memOffset, state] = state.popStack();
@@ -217,7 +217,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     return state;
   },
 
-  RETURN: (state: VMState): VMState => {
+  RETURN: (state: MachineState): MachineState => {
     // TODO
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
@@ -226,46 +226,46 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${mem.toString('hex')})`);
   },
 
-  POP: (state: VMState): VMState => {
+  POP: (state: MachineState): MachineState => {
     [, state] = state.popStack();
     return state.appendLogInfo('()');
   },
 
-  CALLER: (state: VMState): VMState => {
+  CALLER: (state: MachineState): MachineState => {
     return state.pushStack(state.caller);
   },
 
-  ADDRESS: (state: VMState): VMState => {
+  ADDRESS: (state: MachineState): MachineState => {
     return state.pushStack(state.address);
   },
 
-  TIMESTAMP: (state: VMState): VMState => {
-    return state.pushStack(state.getTimestamp());
+  TIMESTAMP: (state: MachineState): MachineState => {
+    return state.pushStack(state.txSnapshot.blockSnapshot.timestamp);
   },
 
-  NUMBER: (state: VMState): VMState => {
-    return state.pushStack(state.getBlockNumber());
+  NUMBER: (state: MachineState): MachineState => {
+    return state.pushStack(state.txSnapshot.blockSnapshot.number);
   },
 
-  COINBASE: (state: VMState): VMState => {
-    return state.pushStack(state.getCoinbase());
+  COINBASE: (state: MachineState): MachineState => {
+    return state.pushStack(state.txSnapshot.blockSnapshot.beneficiary);
   },
 
-  BLOCKHASH: (state: VMState): VMState => {
-    return state.pushStack(state.getBlockhash());
+  BLOCKHASH: (state: MachineState): MachineState => {
+    return state.pushStack(state.txSnapshot.blockSnapshot.parentHash);
   },
 
-  DIFFICULTY: (state: VMState): VMState => {
-    return state.pushStack(state.getDifficulty());
+  DIFFICULTY: (state: MachineState): MachineState => {
+    return state.pushStack(state.txSnapshot.blockSnapshot.difficulty);
   },
 
-  GASLIMIT: (state: VMState): VMState => {
-    return state.pushStack(state.getGasLimit());
+  GASLIMIT: (state: MachineState): MachineState => {
+    return state.pushStack(state.txSnapshot.blockSnapshot.gasLimit);
   },
 
   /* DYNAMIC */
 
-  PUSH: (param: number) => (state: VMState): VMState => {
+  PUSH: (param: number) => (state: MachineState): MachineState => {
     // Todo: Don't do string manipulations
     let toPush = ``;
     for (let i = 0; i < param; i++) {
@@ -277,7 +277,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${n256.toNumber()})`);
   },
 
-  SWAP: (param: number) => (state: VMState): VMState => {
+  SWAP: (param: number) => (state: MachineState): MachineState => {
     const values = [];
     for (let i = 0; i < param + 1; i++) {
       let fst; [fst, state] = state.popStack();
@@ -293,7 +293,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${values[param]}, ${values[0]})`);
   },
 
-  DUP: (param: number) => (state: VMState): VMState => {
+  DUP: (param: number) => (state: MachineState): MachineState => {
     const values = [];
     for (let i = 0; i < param; i++) {
       let fst; [fst, state] = state.popStack();
@@ -307,7 +307,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${values[values.length - 1]})`);
   },
 
-  SHA: (param: number) => (state: VMState): VMState => {
+  SHA: (param: number) => (state: MachineState): MachineState => {
     switch (param) {
       case 3:
         let fst; [fst, state] = state.popStack();

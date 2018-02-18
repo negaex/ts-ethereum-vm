@@ -1,7 +1,7 @@
 
 import { assemble } from '../src/assembler/assembler';
 import { run } from '../src/run/run';
-import { State } from '../src/state/state';
+import { MachineState as State } from '../src/state/machinestate';
 
 export const runCode = (code: string, calldata: string, log: boolean = false): State => {
     const binary = assemble(code);
