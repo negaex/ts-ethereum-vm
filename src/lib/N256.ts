@@ -59,7 +59,11 @@ export class N256 {
       this.value = (num as N256).value;
     } else if (typeof num === 'number') {
       // number
-      this.value = fromNum(num, 256);
+      if (num < 0) {
+        this.value = new N256(-num).not().add(1).value;
+      } else {
+        this.value = fromNum(num, 256);
+      }
     } else if (num instanceof Buffer) {
       this.value = fromBuffer(num);
     } else if (typeof num === 'string') {
@@ -169,7 +173,7 @@ export class N256 {
   }
 
   sub(other: N256Param): N256 {
-    // Is add(other.not()) faster?
+    // Is add(other.not()) any slower?
 
     other = new N256(other);
     const ret = new N256();
@@ -224,17 +228,17 @@ export class N256 {
     }
 
     const limit = new N256(0).not().shiftRight(1);
-    let flag = false;
+    let overflowed = false;
     while (denom.lessThanOrEqual(dividend)) {
       if (denom.greatherThanOrEqual(limit)) {
-        flag = true;
+        overflowed = true;
         break;
       }
       denom = denom.shiftLeft(1);
       current = current.shiftLeft(1);
     }
 
-    if (!flag) {
+    if (!overflowed) {
       denom = denom.shiftRight(1);
       current = current.shiftRight(1);
     }
@@ -304,7 +308,7 @@ export class N256 {
   }
 
   isNegative(): boolean {
-    return this.value.get(0) === 0;
+    return this.value.get(0) === 1;
   }
 
   toNegative(): N256 {
@@ -325,5 +329,13 @@ export class N256 {
 
   toNumber(): number {
     return parseInt(this.value.join(''), 2);
+  }
+
+  toSignedNumber(): number {
+    if (this.isNegative()) {
+      return -1 * this.abs().toNumber();
+    } else {
+      return this.toNumber();
+    }
   }
 }

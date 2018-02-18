@@ -53,7 +53,6 @@ describe('N256', () => {
     ((new N256(5)).div(4)).toNumber().should.equal(1);
     const num = (new N256(2)).exp(27).sub(1);
     (num.exp(2)).div(num).toBinary().should.equal(num.toBinary());
-
     (new N256(0).not()).div(2).toBinary().should.equal(new N256(2).exp(255).sub(1).toBinary());
   });
 
@@ -64,6 +63,7 @@ describe('N256', () => {
     (new N256(19)).exp(1).toNumber().should.equal(19);
     (new N256(2)).exp(0).toNumber().should.equal(1);
     (new N256(0)).exp(0).toNumber().should.equal(1);
+    (new N256(19)).exp(1000);
   });
 
   it('can load buffer', () => {
@@ -72,6 +72,20 @@ describe('N256', () => {
 
   it('can do mod', () => {
     (new N256(6)).mod(4).toNumber().should.equal(2);
+  });
+
+  it('can do negatives', () => {
+    (new N256(-1)).toBinary().should.equal(new N256(1).not().add(1).toBinary());
+    (new N256(-1)).isNegative().should.equal(true);
+    (new N256(-255)).toSignedNumber().should.equal(-255);
+    (new N256(255)).toSignedNumber().should.equal(255);
+    (new N256(255)).toNegative().toSignedNumber().should.equal(-255);
+    (new N256(-1)).abs().toNumber().should.equal(1);
+  });
+
+  it('can do division with negatives', () => {
+    (new N256(-255)).sdiv(5).toSignedNumber().should.equal(-51);
+    (new N256(-255)).sdiv(0).toNumber().should.equal(0);
   });
 
 });
