@@ -6,7 +6,7 @@ import { N256 } from '../lib/N256';
 import { N8 } from '../lib/N8';
 import { highlight, VMError } from '../errors';
 
-interface StateInterface {
+interface VMStateInterface {
   code: Buffer;
   programCounter: number;
   running: boolean;
@@ -27,7 +27,7 @@ interface StateInterface {
   gaslimit: N256;
 }
 
-export class State extends Record<StateInterface>({
+export class VMState extends Record<VMStateInterface>({
   code: Buffer.from([]),
   programCounter: 0,
   running: true,
@@ -52,11 +52,11 @@ export class State extends Record<StateInterface>({
     return this.callData;
   }
 
-  setCallData(callData: Buffer): State {
+  setCallData(callData: Buffer): VMState {
     return this.set('callData', callData);
   }
 
-  setCaller(caller: N256): State {
+  setCaller(caller: N256): VMState {
     return this.set('caller', caller);
   }
 
@@ -85,12 +85,12 @@ export class State extends Record<StateInterface>({
   }
 
   // Return
-  setReturnValue(value: Buffer): State {
+  setReturnValue(value: Buffer): VMState {
     return this.set('returnValue', value);
   }
 
   // Code
-  loadCode(code: Buffer): State {
+  loadCode(code: Buffer): VMState {
     return this.set('code', code);
   }
 
@@ -103,7 +103,7 @@ export class State extends Record<StateInterface>({
   }
 
   // Program counter
-  incrementPC(amount: number = 1): State {
+  incrementPC(amount: number = 1): VMState {
     return this.set('programCounter', this.programCounter + amount);
   }
 
@@ -111,7 +111,7 @@ export class State extends Record<StateInterface>({
     return this.get('programCounter');
   }
 
-  setPC(pc: number): State {
+  setPC(pc: number): VMState {
     return this.set('programCounter', pc);
   }
 
@@ -120,14 +120,14 @@ export class State extends Record<StateInterface>({
     return this.stack.first();
   }
 
-  popStack(): [N256, State] {
+  popStack(): [N256, VMState] {
     if (this.get('stack').size === 0) {
       throw new VMError('Stack underflow');
     }
     return [this.stack.first(), this.set('stack', this.stack.delete(0))];
   }
 
-  pushStack(value: N256): State {
+  pushStack(value: N256): VMState {
     if (this.get('stack').size === 1023) {
       throw new VMError('Stack overflow');
     }
@@ -135,16 +135,16 @@ export class State extends Record<StateInterface>({
   }
 
   // running status
-  stop(): State {
+  stop(): VMState {
     return this.set('running', false);
   }
 
-  start(): State {
+  start(): VMState {
     return this.set('running', true);
   }
 
   // Storage
-  storeAt(address: N256, value: N256): State {
+  storeAt(address: N256, value: N256): VMState {
     return this.set('storage', this.storage.set(address.toBinary(), value));
   }
 
@@ -152,11 +152,11 @@ export class State extends Record<StateInterface>({
     return this.get('storage').get(address.toBinary()) || new N256();
   }
 
-  setMemoryByteAt(address: N256, byte: N8): State {
+  setMemoryByteAt(address: N256, byte: N8): VMState {
     return this.set('memory', this.memory.storeByte(address, byte));
   }
 
-  setMemoryAt(address: N256, value: N256): State {
+  setMemoryAt(address: N256, value: N256): VMState {
     return this.set('memory', this.memory.store(address, value));
   }
 
@@ -169,15 +169,15 @@ export class State extends Record<StateInterface>({
   }
 
   // Gas
-  useGas(gas: number): State {
+  useGas(gas: number): VMState {
     return this.set('gasUsed', this.get('gasUsed') + gas);
   }
 
-  setLogInfo(info: string): State {
+  setLogInfo(info: string): VMState {
     return this.set('logInfo', info);
   }
 
-  appendLogInfo(info: string): State {
+  appendLogInfo(info: string): VMState {
     return this.set('logInfo', this.logInfo + info);
   }
 

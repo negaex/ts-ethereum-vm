@@ -6,7 +6,7 @@ import { N8, fromN256 } from '../lib/N8';
 interface MemoryInterface {
     memory: Map<string, N8>;
     highest: N256;
-  }
+}
   
 export class Memory extends Record<MemoryInterface>({
     memory: Map<string, N8>(),

@@ -1,60 +1,60 @@
 
-import { State } from '../state/state';
+import { VMState } from '../state/state';
 import { N256, fromBuffer } from '../lib/N256';
 import { N8 } from '../lib/N8';
 const keccak = require('keccak');
 
-export type Operation = (state: State) => State;
+export type Operation = (state: VMState) => VMState;
 export type DynamicOp = (param: number) => Operation;
 
 export const operations: { [opcode: string]: Operation | DynamicOp } = {
-  STOP: (state: State): State => {
+  STOP: (state: VMState): VMState => {
     return state.stop();
   },
 
-  ADD: (state: State): State => {
+  ADD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.add(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SUB: (state: State): State => {
+  SUB: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.sub(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  MUL: (state: State): State => {
+  MUL: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.mul(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  DIV: (state: State): State => {
+  DIV: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.div(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  EXP: (state: State): State => {
+  EXP: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.exp(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  MOD: (state: State): State => {
+  MOD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.mod(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  ADDMOD: (state: State): State => {
+  ADDMOD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     let tri; [tri, state] = state.popStack();
@@ -62,14 +62,14 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()}, ${tri.toNumber()})`);
   },
 
-  SDIV: (state: State): State => {
+  SDIV: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.sdiv(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SMOD: (state: State): State => {
+  SMOD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.smod(snd))
@@ -77,110 +77,110 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   },
   
   /* bitwise */
-  AND: (state: State): State => {
+  AND: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.and(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  OR: (state: State): State => {
+  OR: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.or(snd))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  NOT: (state: State): State => {
+  NOT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(fst.not())
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
   /* comparisons */
-  EQ: (state: State): State => {
+  EQ: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.equals(snd) ? new N256(1) : new N256(0))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  LT: (state: State): State => {
+  LT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.lessThan(snd) ? new N256(1) : new N256(0))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SLT: (state: State): State => {
+  SLT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.signedLessThan(snd) ? new N256(1) : new N256(0))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  GT: (state: State): State => {
+  GT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.greaterThan(snd) ? new N256(1) : new N256(0))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SGT: (state: State): State => {
+  SGT: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.signedGreaterThan(snd) ? new N256(1) : new N256(0))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SSTORE: (state: State): State => {
+  SSTORE: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.storeAt(fst, snd)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  SLOAD: (state: State): State => {
+  SLOAD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(state.storedAt(fst))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
-  MSTORE: (state: State): State => {
+  MSTORE: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.setMemoryAt(fst, snd)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  MLOAD: (state: State): State => {
+  MLOAD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(state.getMemoryAt(fst))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
-  CALLDATASIZE: (state: State): State => {
+  CALLDATASIZE: (state: VMState): VMState => {
     return state.pushStack(new N256(state.getCallData().length));
   },
 
-  CALLDATALOAD: (state: State): State => {
+  CALLDATALOAD: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     const data = state.getCallData().slice(fst.toNumber(), fst.add(32).toNumber());
     return state.pushStack(new N256(fromBuffer(data, true)));
   },
 
-  CALLVALUE: (state: State): State => {
+  CALLVALUE: (state: VMState): VMState => {
     // TODO!!!
     return state.pushStack(new N256(0));
   },
 
-  ISZERO: (state: State): State => {
+  ISZERO: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     return state.pushStack(fst.isZero() ? new N256(0) : new N256(1))
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
-  JUMPI: (state: State): State => {
+  JUMPI: (state: VMState): VMState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     if (snd.isZero()) {
@@ -190,12 +190,12 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
-  JUMPDEST: (state: State): State => {
+  JUMPDEST: (state: VMState): VMState => {
     // TODO!!! - Mark as a valid jump destination
     return state;
   },
 
-  CODECOPY: (state: State): State => {
+  CODECOPY: (state: VMState): VMState => {
     // TODO!!!
 
     let memOffset; [memOffset, state] = state.popStack();
@@ -217,7 +217,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     return state;
   },
 
-  RETURN: (state: State): State => {
+  RETURN: (state: VMState): VMState => {
     // TODO
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
@@ -226,46 +226,46 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${mem.toString('hex')})`);
   },
 
-  POP: (state: State): State => {
+  POP: (state: VMState): VMState => {
     [, state] = state.popStack();
     return state.appendLogInfo('()');
   },
 
-  CALLER: (state: State): State => {
+  CALLER: (state: VMState): VMState => {
     return state.pushStack(state.caller);
   },
 
-  ADDRESS: (state: State): State => {
+  ADDRESS: (state: VMState): VMState => {
     return state.pushStack(state.address);
   },
 
-  TIMESTAMP: (state: State): State => {
+  TIMESTAMP: (state: VMState): VMState => {
     return state.pushStack(state.getTimestamp());
   },
 
-  NUMBER: (state: State): State => {
+  NUMBER: (state: VMState): VMState => {
     return state.pushStack(state.getBlockNumber());
   },
 
-  COINBASE: (state: State): State => {
+  COINBASE: (state: VMState): VMState => {
     return state.pushStack(state.getCoinbase());
   },
 
-  BLOCKHASH: (state: State): State => {
+  BLOCKHASH: (state: VMState): VMState => {
     return state.pushStack(state.getBlockhash());
   },
 
-  DIFFICULTY: (state: State): State => {
+  DIFFICULTY: (state: VMState): VMState => {
     return state.pushStack(state.getDifficulty());
   },
 
-  GASLIMIT: (state: State): State => {
+  GASLIMIT: (state: VMState): VMState => {
     return state.pushStack(state.getGasLimit());
   },
 
   /* DYNAMIC */
 
-  PUSH: (param: number) => (state: State): State => {
+  PUSH: (param: number) => (state: VMState): VMState => {
     // Todo: Don't do string manipulations
     let toPush = ``;
     for (let i = 0; i < param; i++) {
@@ -277,7 +277,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${n256.toNumber()})`);
   },
 
-  SWAP: (param: number) => (state: State): State => {
+  SWAP: (param: number) => (state: VMState): VMState => {
     const values = [];
     for (let i = 0; i < param + 1; i++) {
       let fst; [fst, state] = state.popStack();
@@ -293,7 +293,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${values[param]}, ${values[0]})`);
   },
 
-  DUP: (param: number) => (state: State): State => {
+  DUP: (param: number) => (state: VMState): VMState => {
     const values = [];
     for (let i = 0; i < param; i++) {
       let fst; [fst, state] = state.popStack();
@@ -307,7 +307,7 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     .appendLogInfo(`(${values[values.length - 1]})`);
   },
 
-  SHA: (param: number) => (state: State): State => {
+  SHA: (param: number) => (state: VMState): VMState => {
     switch (param) {
       case 3:
         let fst; [fst, state] = state.popStack();
