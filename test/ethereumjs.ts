@@ -165,7 +165,7 @@ describe('EthereumJS', () => {
     );
   });
 
-  it('', function () {
+  it('', function (done: any) {
     console.log(tests.length);
     tests.forEach(function([test, testName, fileName]: any, indexIfYouNeedIt: number) {
         if (testName !== 'randomVMtest') {
@@ -173,6 +173,7 @@ describe('EthereumJS', () => {
           runVMTest({}, test, true);
         }
     });
-});
+    done();
+}).timeout(10000);
 
 });

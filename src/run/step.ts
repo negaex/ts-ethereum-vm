@@ -21,7 +21,9 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
     throw new VMError(`Operation not implemented: //${opcode.mnemonic}\\ (0x${opcode.code.toString(16)})`);
   }
 
-  process.stdout.write(`\n${opcode.mnemonic}`);
+  if (log) {
+    process.stdout.write(`\n${opcode.mnemonic}`);
+  }
 
   state = state.setLogInfo(opcode.mnemonic);
 

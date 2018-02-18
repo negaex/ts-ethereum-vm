@@ -111,6 +111,29 @@ export class N256 {
     return this.equals(0);
   }
 
+  // Negatives
+  signedLessThan(other: N256Param): boolean {
+    other = new N256(other);
+    if (this.isNegative()) {
+      if (other.isNegative()) {
+        return this.greaterThan(other);
+      } else {
+        return true;
+      }
+    } else {
+      if (other.isNegative()) {
+        return false;
+      } else {
+        return this.lessThan(other);
+      }
+    }
+  }
+
+  signedGreaterThan(other: N256Param): boolean {
+    other = new N256(other);
+    return !(this.signedGreaterThan(other) || this.equals(other));
+  }
+
   and(other: N256Param): N256 {
     other = new N256(other);
 
@@ -146,6 +169,8 @@ export class N256 {
   }
 
   sub(other: N256Param): N256 {
+    // Is add(other.not()) faster?
+
     other = new N256(other);
     const ret = new N256();
 
@@ -226,6 +251,21 @@ export class N256 {
     return answer;
   }
 
+  sdiv(other: N256Param): N256 {
+    other = new N256(other);
+    if (other.isZero()) {
+      return other;
+    }
+    if (other.equals(new N256(1).shiftLeft(255).toNegative()) && this.equals(new N256(1).toNegative())) {
+      return new N256(1).shiftLeft(255).toNegative();
+    }
+    let ret = this.abs().div(other.abs());
+    if (this.isNegative()) {
+      ret = ret.toNegative();
+    }
+    return ret;
+  }
+
   exp(other: N256Param): N256 {
     other = new N256(other);
     if (other.isZero()) {
@@ -241,6 +281,34 @@ export class N256 {
 
   mod(other: N256Param): N256 {
     return this.sub(this.div(other).mul(other));
+  }
+
+  smod(other: N256Param): N256 {
+    other = new N256(other);
+    if (other.isZero()) {
+      return other;
+    }
+    let ret = this.abs().mod(other.abs());
+    if (this.isNegative()) {
+      ret = ret.toNegative();
+    }
+    return ret;
+  }
+
+  abs(): N256 {
+    if (this.isNegative()) {
+      return this.sub(1).not();
+    } else {
+      return this;
+    }
+  }
+
+  isNegative(): boolean {
+    return this.value.get(0) === 0;
+  }
+
+  toNegative(): N256 {
+    return this.not().add(1);
   }
 
   not(): N256 {

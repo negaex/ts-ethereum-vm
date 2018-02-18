@@ -61,6 +61,20 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     return state.pushStack(fst.add(snd).mod(tri))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()}, ${tri.toNumber()})`);
   },
+
+  SDIV: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.sdiv(snd))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
+  SMOD: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.smod(snd))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
   
   /* bitwise */
   AND: (state: State): State => {
@@ -95,6 +109,27 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
     return state.pushStack(fst.lessThan(snd) ? new N256(1) : new N256(0))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
+  SLT: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.signedLessThan(snd) ? new N256(1) : new N256(0))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
+  GT: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.greaterThan(snd) ? new N256(1) : new N256(0))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
+  SGT: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.signedGreaterThan(snd) ? new N256(1) : new N256(0))
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
