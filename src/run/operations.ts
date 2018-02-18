@@ -47,6 +47,21 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
+  MOD: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    return state.pushStack(fst.mod(snd))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
+  },
+
+  ADDMOD: (state: State): State => {
+    let fst; [fst, state] = state.popStack();
+    let snd; [snd, state] = state.popStack();
+    let tri; [tri, state] = state.popStack();
+    return state.pushStack(fst.add(snd).mod(tri))
+    .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()}, ${tri.toNumber()})`);
+  },
+  
   /* bitwise */
   AND: (state: State): State => {
     let fst; [fst, state] = state.popStack();

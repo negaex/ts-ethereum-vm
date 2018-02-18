@@ -16,5 +16,5 @@ export const run = (state: State, log: boolean = false): State => {
     state = step(state, nextOp, log);
   }
 
-  return state;
+  return state.stop();
 };

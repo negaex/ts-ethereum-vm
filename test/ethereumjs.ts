@@ -139,7 +139,6 @@ describe('EthereumJS', () => {
     let testGetterArgs: any = {};
 
     testGetterArgs.skipTests = getSkipTests('ALL');
-    testGetterArgs.runSkipped = getSkipTests('NONE');
     testGetterArgs.skipVM = skipVM;
 
     // runnerArgs.vmtrace = true; // for VMTests
@@ -152,7 +151,7 @@ describe('EthereumJS', () => {
           (resolve, reject) => {
             // console.log(`file: ${fileName} test: ${testName}`);
             // runVMTest({}, test, resolve);
-            tests.push(test);
+            tests.push([test, testName, fileName]);
             resolve(true);
           }
         ).catch(err => console.log(err));
@@ -163,11 +162,11 @@ describe('EthereumJS', () => {
 
   it('', function () {
     console.log(tests.length);
-    tests.forEach(function(test: any, indexIfYouNeedIt: number) {
-      // it(`${indexIfYouNeedIt}`, function() {
-        console.log(`!!!!%${indexIfYouNeedIt}`);
-        runVMTest({}, test, null);
-      // });
+    tests.forEach(function([test, testName, fileName]: any, indexIfYouNeedIt: number) {
+        if (testName !== 'randomVMtest') {
+          console.log(`file: ${fileName} test: ${testName}`);
+          runVMTest({}, test, true);
+        }
     });
 });
 

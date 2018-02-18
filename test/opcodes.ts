@@ -1,4 +1,3 @@
-// tslint:disable:max-line-length
 
 import { expect, should } from 'chai';
 should();

@@ -21,6 +21,8 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
     throw new VMError(`Operation not implemented: //${opcode.mnemonic}\\ (0x${opcode.code.toString(16)})`);
   }
 
+  process.stdout.write(`\n${opcode.mnemonic}`);
+
   state = state.setLogInfo(opcode.mnemonic);
 
   // Increment program counter
@@ -33,7 +35,7 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
   state = operation(state);
 
   if (log) {
-    console.log(`\n─ ${state.logInfo} ${'─'.repeat(Math.max(0, process.stdout.columns - 3 - state.logInfo.length))}`);
+    console.log(`\r─ ${state.logInfo} ${'─'.repeat(Math.max(0, process.stdout.columns - 3 - state.logInfo.length))}`);
     console.log(state + '\n' + '─'.repeat(process.stdout.columns));
     
     if (!state.running) {
