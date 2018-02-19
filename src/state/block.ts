@@ -5,6 +5,8 @@ import { Transaction } from './transaction';
 import { List } from 'immutable';
 import { MachineState, emptyMachineState } from './machinestate';
 import { Storage } from './storage';
+import { run } from '../run/run';
+import { Account } from './account';
 
 interface BlockInterface {
   parentHash: N256;
@@ -25,7 +27,7 @@ interface BlockInterface {
 
   pending: boolean;
   transactions: List<Transaction>;
-  storages: Map<Address, Storage>;
+  accounts: Map<Address, Account>;
 }
 
 export class Block extends Record<BlockInterface>({
@@ -38,7 +40,30 @@ export class Block extends Record<BlockInterface>({
   timestamp: Ox0,
   pending: true,
   transactions: List<Transaction>(),
-  storages: new Map<Address, Storage>(),
-}) {}
+  
+  accounts: new Map<Address, Account>(),
+}) {
+
+  commit(): Block {
+    if (!this.pending) {
+      throw new Error('Block already commited.');
+    }
+    return this.set('pending', false);
+  }
+
+  addTransaction(tx: Transaction): Block {
+    if (!this.pending) {
+      throw new Error('Block already commited.');
+    }
+
+    tx = tx.set('accounts', this.accounts);
+    const newState = tx.process(this);
+
+    // ...
+
+    return this;
+  }
+
+}
 
 export const emptyBlock = new Block();

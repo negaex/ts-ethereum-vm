@@ -17,7 +17,7 @@ export class N8 {
   constructor(num?: N8Param) {
     if (num === undefined) {
       // Undefined
-      this.value = List<Bit>(new Array(8).fill(0));
+      this.value = List<Bit>(new Array(8).fill(false));
     } else if (num instanceof N8) {
       // N8
       this.value = (num as N8).value;
@@ -31,11 +31,11 @@ export class N8 {
   }
 
   toNumber(): number {
-    return parseInt(this.value.join(''), 2);
+    return parseInt(this.value.map(x => x ? 1 : 0).join(''), 2);
   }
 
   toHex(): string {
-    let ret = parseInt(this.value.join(''), 2).toString(16);
+    let ret = parseInt(this.value.map(x => x ? 1 : 0).join(''), 2).toString(16);
     if (ret.length === 1) {
       ret = '0' + ret;
     }

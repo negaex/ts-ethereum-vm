@@ -7,6 +7,8 @@ import { N8 } from '../lib/N8';
 import { highlight, VMError } from '../errors';
 import { Address } from './account';
 import { Transaction, emptyTransaction } from './transaction';
+import { Block, emptyBlock } from './block';
+import { Account } from './account';
 
 interface MachineStateInterface {
   code: Buffer;
@@ -21,8 +23,9 @@ interface MachineStateInterface {
   address: Address;
   callData: Buffer;
 
-  storages: Map<Address, Storage>;
-  txSnapshot: Transaction;
+  currentBlock: Block;
+  currentTransaction: Transaction;
+  accounts: Map<Address, Account>;
 }
 
 export class MachineState extends Record<MachineStateInterface>({
@@ -38,8 +41,9 @@ export class MachineState extends Record<MachineStateInterface>({
   address: Ox0,
   callData: null,
 
-  storages: new Map<Address, Storage>(),
-  txSnapshot: emptyTransaction,
+  currentBlock: emptyBlock,
+  currentTransaction: emptyTransaction,
+  accounts: new Map<Address, Account>(),
 }) {
 
   setCallData(callData: Buffer): MachineState {
@@ -106,13 +110,19 @@ export class MachineState extends Record<MachineStateInterface>({
   }
 
   // Storage
-  storeAt(address: N256, value: N256): MachineState {
-    const storage = this.storages.get(this.address) ||  emptyStorage;
-    return this.set('storages', this.storages.set(this.address, storage.set(address.toBinary(), value)));
+  storeAt(location: N256, value: N256): MachineState {
+    let account = this.accounts.get(this.address);
+    let storage = emptyStorage;
+    if (account) {
+      storage = account.storage;
+    }
+    storage = storage.set(location, value);
+    account = account.set('storage', storage);
+    return this.set('accounts', this.accounts.set(this.address, account));
   }
 
-  storedAt(address: N256): N256 {
-    return this.storages.get(this.address).get(address.toBinary()) || new N256();
+  storedAt(location: N256): N256 {
+    return this.accounts.get(this.address).storage.get(location) || new N256();
   }
 
   setMemoryByteAt(address: N256, byte: N8): MachineState {
@@ -155,9 +165,10 @@ export class MachineState extends Record<MachineStateInterface>({
   toString(): string {
     // console.log(this.memory.log());
     const memStr = this.memory.log();
+    const account = this.accounts.get(this.address);
     return highlight(`//PC\\: ${this.programCounter}, //running\\: ${this.running}, //gasUsed\\: ${this.gasUsed}\n\
 //stack\\: ${stackToString(this.stack)}
-//storage\\: ${storageToString(this.storages.get(this.address) || emptyStorage)}
+//storage\\: ${storageToString(account ? account.storage : emptyStorage)}
 //memory\\: ${memStr}`);
   }
 }

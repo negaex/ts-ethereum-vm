@@ -2,24 +2,24 @@
 import { List } from 'immutable';
 import { N8 } from './N8';
 
-export type Bit = 0 | 1;
+export type Bit = boolean;
 export type BitList = List<Bit>;
 type N256Param = number | N256 | BitList | Buffer | string;
 
 export const pad = (arr: BitList, length: number): BitList => {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
   const diff = length - arr.size;
-  return List(new Array(diff).fill(0)).push(...arr.toArray());
+  return List(new Array(diff).fill(false)).push(...arr.toArray());
 };
 
 export const padRight = (arr: BitList, length: number): BitList => {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
   const diff = length - arr.size;
-  return arr.concat(List(new Array(diff).fill(0))).toList();
+  return arr.concat(List(new Array(diff).fill(false))).toList();
 };
 
 export const fromString = (bin: string, length: number): BitList => {
-  const arr = bin.split('').map(x => (x === '0') ? 0 : 1);
+  const arr = bin.split('').map(x => (x === '1'));
   // console.log(arr);
   return pad(List(arr), length);
 };
@@ -53,7 +53,7 @@ export class N256 {
   constructor(num?: N256Param) {
     if (num === undefined) {
       // Undefined
-      this.value = List<Bit>(new Array(256).fill(0));
+      this.value = List<Bit>(new Array(256).fill(false));
     } else if (num instanceof N256) {
       // N256
       this.value = (num as N256).value;
@@ -143,7 +143,7 @@ export class N256 {
 
     return new N256(
       this.value.zipWith(
-        (v1: Bit, v2: Bit): Bit => (v1 + v2) === 2 ? 1 : 0,
+        (v1: Bit, v2: Bit): Bit => (v1 && v2),
         other.value).toList()
     );
   }
@@ -153,7 +153,7 @@ export class N256 {
 
     return new N256(
       this.value.zipWith(
-        (v1: Bit, v2: Bit): Bit => (v1 + v2) === 1 ? 1 : 0,
+        (v1: Bit, v2: Bit): Bit => (v1 || v2),
         other.value).toList()
     );
   }
@@ -162,10 +162,12 @@ export class N256 {
     other = new N256(other);
     const ret = new N256();
 
-    let carry: Bit = 0;
+    let carry: number = 0;
     for (let i = 255; i >= 0; i--) {
-      const bitsum: number = other.value.get(i) + this.value.get(i) + carry;
-      ret.value = ret.value.set(i, (bitsum % 2 === 1) ? 1 : 0);
+      const bitsum: number = (other.value.get(i) ? 1 : 0) +
+        (this.value.get(i) ? 1 : 0) +
+        carry;
+      ret.value = ret.value.set(i, (bitsum % 2 === 1));
       carry = (bitsum >= 2) ? 1 : 0;
     }
 
@@ -178,14 +180,14 @@ export class N256 {
     other = new N256(other);
     const ret = new N256();
 
-    let carry: Bit = 0;
+    let carry: number = 0;
     for (let i = 255; i >= 0; i--) {
-      const bitsum: number = other.value.get(i) + carry;
-      if (this.value.get(i) === 0) {
-        ret.value = ret.value.set(i, (bitsum === 1) ? 1 : 0);
+      const bitsum: number = (other.value.get(i) ? 1 : 0) + carry;
+      if (!this.value.get(i)) {
+        ret.value = ret.value.set(i, (bitsum === 1));
         carry = (bitsum >= 1) ? 1 : 0;
       } else {
-        ret.value = ret.value.set(i, (bitsum === 1) ? 0 : 1);
+        ret.value = ret.value.set(i, !(bitsum === 1));
         carry = (bitsum >= 2) ? 1 : 0;
       }
     }
@@ -194,12 +196,12 @@ export class N256 {
   }
 
   shiftLeft(amount: number): N256 {
-    return new N256(this.value.slice(amount).toList().push(...new Array(amount).fill(0)));
+    return new N256(this.value.slice(amount).toList().push(...new Array(amount).fill(false)));
   }
 
   shiftRight(amount: number): N256 {
     return new N256(
-      List<Bit>(new Array(amount).fill(0)).concat(this.value.slice(0, this.value.size - amount)).toList()
+      List<Bit>(new Array(amount).fill(false)).concat(this.value.slice(0, this.value.size - amount)).toList()
     );
   }
 
@@ -208,7 +210,7 @@ export class N256 {
     let ret = new N256();
 
     for (let i = 255; i >= 0; i--) {
-      if (this.value.get(i) === 1) {
+      if (this.value.get(i)) {
         ret = ret.add(right);
       }
       right = right.shiftLeft(1);
@@ -276,9 +278,9 @@ export class N256 {
       return new N256(1);
     } else if (other.equals(1)) {
       return this;
-    } else if (other.value.get(255) === 0) {
+    } else if (!other.value.get(255)) {
       return this.mul(this).exp(other.div(2));
-    } else if (other.value.get(255) === 1) {
+    } else if (other.value.get(255)) {
       return this.mul(this.mul(this).exp(other.sub(1).div(2)));
     }
   }
@@ -308,7 +310,7 @@ export class N256 {
   }
 
   isNegative(): boolean {
-    return this.value.get(0) === 1;
+    return this.value.get(0);
   }
 
   toNegative(): N256 {
@@ -316,19 +318,19 @@ export class N256 {
   }
 
   not(): N256 {
-    return new N256(this.value.map((x: Bit): Bit => (x === 0) ? 1 : 0).toList());
+    return new N256(this.value.map((bit: Bit): Bit => !bit).toList());
   }
 
   toString(): string {
-    return parseInt(this.value.join(''), 2).toString();
+    return parseInt(this.value.map(x => x ? 1 : 0).join(''), 2).toString();
   }
 
   toBinary(): string {
-    return this.value.join('').replace(/^0+/, '') || '0';
+    return this.value.map(x => x ? 1 : 0).join('').replace(/^0+/, '') || '0';
   }
 
   toNumber(): number {
-    return parseInt(this.value.join(''), 2);
+    return parseInt(this.value.map(x => x ? 1 : 0).join(''), 2);
   }
 
   toSignedNumber(): number {
