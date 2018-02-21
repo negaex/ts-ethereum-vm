@@ -1,5 +1,5 @@
 import { Block } from '../state/block';
-import { Ox0, N256 } from '../lib/N256';
+import { Ox0, Ox1, N256 } from '../lib/N256';
 import { Transaction } from '../state/transaction';
 import { List } from 'immutable';
 import { Accounts, Account } from '../state/account';
@@ -18,7 +18,7 @@ export const genesisBlock = new Block({
   accounts: new Accounts().set(
     new N256(0),
     new Account({
-      balance: new N256(1) // TODO: Remove
+      balance: Ox1 // TODO: Remove
     })
   ),
 });

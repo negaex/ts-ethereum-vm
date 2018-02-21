@@ -36,7 +36,7 @@ export class MachineState extends Record<MachineStateInterface>({
   gasUsed: 0,
   memory: new Memory(),
   logInfo: '',
-  returnValue: null,
+  returnValue: Buffer.from([]),
   caller: Ox0,
   address: Ox0,
   callData: null,

@@ -3,7 +3,7 @@
 import { expect, should } from 'chai';
 should();
 import 'mocha';
-import { N256, Ox0 } from '../src/lib/N256';
+import { N256, Ox0, Ox1 } from '../src/lib/N256';
 import { runCode } from './testUtil';
 
 describe('VM', () => {
@@ -14,7 +14,7 @@ describe('VM', () => {
 
   it('can store two 128 bit values at a single storage location', () => {
     const state = runCode('600080547002000000000000000000000000000000006001608060020a03199091166001176001608060020a0316179055', '', false);
-    state.storedAt(Ox0).toBinary().should.equal(new N256(1).shiftLeft(65).add(1).toBinary());
+    state.storedAt(Ox0).toBinary().should.equal(Ox1.shiftLeft(65).add(1).toBinary());
   });
 
   it('can return a program', () => {

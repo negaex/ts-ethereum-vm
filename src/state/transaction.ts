@@ -57,6 +57,8 @@ export class Transaction extends Record<TransactionInterface>({
     toAccount = toAccount.set('balance', toAccount.balance.add(this.value));
     accounts = accounts.set(this.from, fromAccount).set(to, toAccount);
     state = state.set('accounts', accounts);
+    state = state.set('address', to);
+    state = state.set('caller', this.from);
 
     if (deployingContract) {
       state = state.set('code', this.data);

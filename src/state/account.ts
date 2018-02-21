@@ -1,6 +1,6 @@
 import { Record } from '../lib/record';
 import { N256, Ox0 } from '../lib/N256';
-import { Storage, emptyStorage } from './storage';
+import { Storage, emptyStorage, storageToString } from './storage';
 import { Map } from 'immutable';
 
 export type Address = N256;
@@ -19,7 +19,12 @@ export class Account extends Record<AccountInterface>({
   balance: Ox0,
   storage: emptyStorage,
   code: Buffer.from([]),
-}) { }
+}) {
+  toString(): string {
+    // tslint:disable-next-line:max-line-length
+    return `<<Nonce:>> ${this.nonce}, <<Balance:>> ${this.balance.toNumber()}, <<Storage:>> ${storageToString(this.storage)}, <<Code:>> ${this.code.toString('hex')}`;
+  }
+}
 
 export const emptyAccount = new Account();
 
@@ -36,6 +41,10 @@ export class Accounts {
 
   set(address: Address, account: Account): Accounts {
     return new Accounts(this.inner.set(address, account));
+  }
+
+  toString(): string {
+    return this.inner.map((x, k) => `//${k.toHex()}:\\ ${x.toString()}`).join('\n');
   }
 }
 

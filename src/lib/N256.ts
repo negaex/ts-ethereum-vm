@@ -1,6 +1,6 @@
 
 import { List } from 'immutable';
-import { N8 } from './N8';
+import { N8, fromN256 } from './N8';
 
 export type Bit = boolean;
 export type BitList = List<Bit>;
@@ -222,7 +222,7 @@ export class N256 {
   div(other: N256Param): N256 {
     let dividend = new N256(this);
     let denom = new N256(other); // divisor
-    let current = new N256(1);
+    let current = Ox1;
     let answer = Ox0;
 
     if (denom.isZero()) {
@@ -262,8 +262,8 @@ export class N256 {
     if (other.isZero()) {
       return other;
     }
-    if (other.equals(new N256(1).shiftLeft(255).toNegative()) && this.equals(new N256(1).toNegative())) {
-      return new N256(1).shiftLeft(255).toNegative();
+    if (other.equals(Ox1.shiftLeft(255).toNegative()) && this.equals(Ox1.toNegative())) {
+      return Ox1.shiftLeft(255).toNegative();
     }
     let ret = this.abs().div(other.abs());
     if (this.isNegative()) {
@@ -275,7 +275,7 @@ export class N256 {
   exp(other: N256Param): N256 {
     other = new N256(other);
     if (other.isZero()) {
-      return new N256(1);
+      return Ox1;
     } else if (other.equals(1)) {
       return this;
     } else if (!other.value.get(255)) {
@@ -339,6 +339,11 @@ export class N256 {
     } else {
       return this.toNumber();
     }
+  }
+
+  toHex(): string {
+    let n8s = fromN256(this);
+    return '0x' + n8s.map(x => x.toHex()).join('');
   }
 }
 

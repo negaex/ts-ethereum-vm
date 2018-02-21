@@ -17,6 +17,7 @@
 import { Node } from './node/node';
 import { Ox0, Ox1, N256 } from './lib/N256';
 import { List } from 'immutable';
+import { highlight } from './errors';
 
 const node = new Node(Ox0);
 node.newTransaction(
@@ -36,4 +37,4 @@ node.newTransaction(
   '0x771602f700000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003',
 );
 
-console.log(node.getAccounts());
+console.log('\n\n' + highlight(node.getAccounts().toString()));

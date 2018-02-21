@@ -4,6 +4,36 @@
 
 The OpCode behaviour is implemented in [operations.ts](https://github.com/***REMOVED***/ts-ethereum-vm/blob/master/src/run/operations.ts).
 
+## Example
+
+Deploying the following code:
+
+```js
+pragma solidity ^0.4.11;
+
+contract C {
+  uint256 a;
+
+  function add(uint256 b, uint256 c) public {
+      a = b + c;
+  }
+  
+  function getA() public view returns (uint256) {
+      return a;
+  }
+}
+```
+
+and calling it:
+
+```js
+add(2, 3);
+```
+
+will output the folling state (note the storage is set to 101, 5 in binary):
+
+![Preview](https://i.imgur.com/TvGfQcX.png)
+
 ## References
 
 * [Ethereum Yellow Paper](http://gavwood.com/Paper.pdf)

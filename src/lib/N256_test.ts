@@ -1,4 +1,4 @@
-import { N256, Ox0 } from './N256';
+import { N256, Ox0, Ox1 } from './N256';
 import { expect, should } from 'chai';
 should();
 import 'mocha';
@@ -7,7 +7,7 @@ describe('N256', () => {
 
   it('can load number', () => {
     (Ox0).toNumber().should.equal(0);
-    (new N256(1)).toNumber().should.equal(1);
+    (Ox1).toNumber().should.equal(1);
     (new N256(10)).toNumber().should.equal(10);
     (new N256(999)).toNumber().should.equal(999);
     (Ox0.not().toNumber().should.equal((2 ** 256) - 1));
@@ -16,9 +16,9 @@ describe('N256', () => {
 
   it('can shift numbers', () => {
     (Ox0).shiftLeft(1).toNumber().should.equal(0);
-    (new N256(1)).shiftLeft(1).toNumber().should.equal(2);
+    (Ox1).shiftLeft(1).toNumber().should.equal(2);
     (new N256(100)).shiftLeft(1).toNumber().should.equal(200);
-    (new N256(1)).shiftLeft(10).toNumber().should.equal(1024);
+    (Ox1).shiftLeft(10).toNumber().should.equal(1024);
 
     (Ox0).shiftRight(1).toNumber().should.equal(0);
     (new N256(2)).shiftRight(1).toNumber().should.equal(1);
@@ -27,7 +27,7 @@ describe('N256', () => {
   });
 
   it('can add numbers', () => {
-    (new N256(1)).add(10).toNumber().should.equal(11);
+    (Ox1).add(10).toNumber().should.equal(11);
     (new N256(2 ** 10)).add(2 ** 11).toNumber().should.equal(3072);
     (Ox0).not().add(1).toNumber().should.equal(0);
   });
@@ -49,7 +49,7 @@ describe('N256', () => {
   it('can divide numbers', () => {
     (new N256(6)).div(3).toNumber().should.equal(2);
     (new N256(16129)).div(127).toNumber().should.equal(127);
-    ((new N256(1)).div(2)).toNumber().should.equal(0);
+    ((Ox1).div(2)).toNumber().should.equal(0);
     ((new N256(5)).div(4)).toNumber().should.equal(1);
     const num = (new N256(2)).exp(27).sub(1);
     (num.exp(2)).div(num).toBinary().should.equal(num.toBinary());
@@ -75,7 +75,7 @@ describe('N256', () => {
   });
 
   it('can do negatives', () => {
-    (new N256(-1)).toBinary().should.equal(new N256(1).not().add(1).toBinary());
+    (new N256(-1)).toBinary().should.equal(Ox1.not().add(1).toBinary());
     (new N256(-1)).isNegative().should.equal(true);
     (new N256(-255)).toSignedNumber().should.equal(-255);
     (new N256(255)).toSignedNumber().should.equal(255);

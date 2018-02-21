@@ -1,6 +1,6 @@
 
 import { MachineState } from '../state/machinestate';
-import { N256, fromBuffer, Ox0 } from '../lib/N256';
+import { N256, fromBuffer, Ox0, Ox1 } from '../lib/N256';
 import { N8 } from '../lib/N8';
 const keccak = require('keccak');
 
@@ -101,35 +101,35 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
   EQ: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.equals(snd) ? new N256(1) : Ox0)
+    return state.pushStack(fst.equals(snd) ? Ox1 : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   LT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.lessThan(snd) ? new N256(1) : Ox0)
+    return state.pushStack(fst.lessThan(snd) ? Ox1 : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   SLT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.signedLessThan(snd) ? new N256(1) : Ox0)
+    return state.pushStack(fst.signedLessThan(snd) ? Ox1 : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   GT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.greaterThan(snd) ? new N256(1) : Ox0)
+    return state.pushStack(fst.greaterThan(snd) ? Ox1 : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
   SGT: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    return state.pushStack(fst.signedGreaterThan(snd) ? new N256(1) : Ox0)
+    return state.pushStack(fst.signedGreaterThan(snd) ? Ox1 : Ox0)
     .appendLogInfo(`(${fst.toNumber()}, ${snd.toNumber()})`);
   },
 
@@ -176,14 +176,21 @@ export const operations: { [opcode: string]: Operation | DynamicOp } = {
 
   ISZERO: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
-    return state.pushStack(fst.isZero() ? Ox0 : new N256(1))
+    return state.pushStack(fst.isZero() ? Ox1 : Ox0)
+    .appendLogInfo(`(${fst.toNumber()})`);
+  },
+
+  JUMP: (state: MachineState): MachineState => {
+    let fst; [fst, state] = state.popStack();
+    state = state.set('programCounter', fst.toNumber());
+    return state
     .appendLogInfo(`(${fst.toNumber()})`);
   },
 
   JUMPI: (state: MachineState): MachineState => {
     let fst; [fst, state] = state.popStack();
     let snd; [snd, state] = state.popStack();
-    if (snd.isZero()) {
+    if (!snd.isZero()) {
       state = state.set('programCounter', fst.toNumber());
     }
     return state
@@ -269,7 +276,11 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
     // Todo: Don't do string manipulations
     let toPush = ``;
     for (let i = 0; i < param; i++) {
-      toPush += state.nextCode().toString(16);
+      let byte = state.nextCode().toString(16);
+      if (byte.length === 1) {
+        byte = '0' + byte;
+      }
+      toPush += byte;
       state = state.incrementPC();
     }
     const n256 = new N256(parseInt(toPush, 16));
