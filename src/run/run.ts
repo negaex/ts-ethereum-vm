@@ -7,6 +7,11 @@ import { InvalidBinary } from '../errors';
 
 export const run = (state: MachineState, log: boolean = false): MachineState => {
 
+  if (log) {
+    console.log(`Running code: ${state.code.toString('hex')}`);
+    console.log(`START => \t{${state}}`);
+  }
+
   while (state.hasCode() && state.get('running')) {
     const nextCode: number = state.nextCode();
     const nextOp: OpCode = instructions[nextCode];

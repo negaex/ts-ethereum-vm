@@ -343,3 +343,6 @@ export class N256 {
 }
 
 export const Ox0 = new N256(0);
+export const Ox1 = new N256(1);
+export const Ox2 = new N256(2);
+export const Ox3 = new N256(3);

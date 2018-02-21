@@ -240,27 +240,27 @@ ${state.code.slice(codeOffset.toNumber(), codeOffset.add(length).toNumber()).toS
   },
 
   TIMESTAMP: (state: MachineState): MachineState => {
-    return state.pushStack(state.txSnapshot.blockSnapshot.timestamp);
+    return state.pushStack(state.currentBlock.timestamp);
   },
 
   NUMBER: (state: MachineState): MachineState => {
-    return state.pushStack(state.txSnapshot.blockSnapshot.number);
+    return state.pushStack(state.currentBlock.number);
   },
 
   COINBASE: (state: MachineState): MachineState => {
-    return state.pushStack(state.txSnapshot.blockSnapshot.beneficiary);
+    return state.pushStack(state.currentBlock.beneficiary);
   },
 
   BLOCKHASH: (state: MachineState): MachineState => {
-    return state.pushStack(state.txSnapshot.blockSnapshot.parentHash);
+    return state.pushStack(state.currentBlock.parentHash);
   },
 
   DIFFICULTY: (state: MachineState): MachineState => {
-    return state.pushStack(state.txSnapshot.blockSnapshot.difficulty);
+    return state.pushStack(state.currentBlock.difficulty);
   },
 
   GASLIMIT: (state: MachineState): MachineState => {
-    return state.pushStack(state.txSnapshot.blockSnapshot.gasLimit);
+    return state.pushStack(state.currentBlock.gasLimit);
   },
 
   /* DYNAMIC */

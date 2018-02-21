@@ -8,7 +8,7 @@ import { highlight, VMError } from '../errors';
 import { Address } from './account';
 import { Transaction, emptyTransaction } from './transaction';
 import { Block, emptyBlock } from './block';
-import { Account } from './account';
+import { Account, Accounts, emptyAccounts } from './account';
 
 interface MachineStateInterface {
   code: Buffer;
@@ -25,7 +25,7 @@ interface MachineStateInterface {
 
   currentBlock: Block;
   currentTransaction: Transaction;
-  accounts: Map<Address, Account>;
+  accounts: Accounts;
 }
 
 export class MachineState extends Record<MachineStateInterface>({
@@ -43,7 +43,7 @@ export class MachineState extends Record<MachineStateInterface>({
 
   currentBlock: emptyBlock,
   currentTransaction: emptyTransaction,
-  accounts: new Map<Address, Account>(),
+  accounts: emptyAccounts,
 }) {
 
   setCallData(callData: Buffer): MachineState {

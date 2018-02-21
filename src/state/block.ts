@@ -6,12 +6,12 @@ import { List } from 'immutable';
 import { MachineState, emptyMachineState } from './machinestate';
 import { Storage } from './storage';
 import { run } from '../run/run';
-import { Account } from './account';
+import { Account, Accounts, emptyAccounts } from './account';
 
 interface BlockInterface {
   parentHash: N256;
   // ommersHash: N256;
-  beneficiary: N256;
+  beneficiary: Address;
   // stateRoot: N256;
   // transactionsRoot: N256;
   // receiptsRoot: N256;
@@ -27,7 +27,7 @@ interface BlockInterface {
 
   pending: boolean;
   transactions: List<Transaction>;
-  accounts: Map<Address, Account>;
+  accounts: Accounts;
 }
 
 export class Block extends Record<BlockInterface>({
@@ -41,7 +41,7 @@ export class Block extends Record<BlockInterface>({
   pending: true,
   transactions: List<Transaction>(),
   
-  accounts: new Map<Address, Account>(),
+  accounts: emptyAccounts,
 }) {
 
   commit(): Block {
@@ -55,15 +55,26 @@ export class Block extends Record<BlockInterface>({
     if (!this.pending) {
       throw new Error('Block already commited.');
     }
-
+    let block = this;
     tx = tx.set('accounts', this.accounts);
-    const newState = tx.process(this);
+    const newState = tx.process(block);
+    block = block.set('accounts', newState.accounts);
+    block = block.set('transactions', block.transactions.push(tx));
 
-    // ...
-
-    return this;
+    return block;
   }
 
 }
+
+export const newBlock = (beneficiary: Address, accounts: Accounts): Block => {
+  let block = emptyBlock;
+  block = block.set('accounts', accounts);
+  block = block.set('beneficiary', beneficiary);
+  let beneficiaryAccount = accounts.get(beneficiary);
+  beneficiaryAccount = beneficiaryAccount.set('balance', beneficiaryAccount.balance.add(5));
+  accounts = accounts.set(beneficiary, beneficiaryAccount);
+  block = block.set('accounts', accounts);
+  return block;
+};
 
 export const emptyBlock = new Block();

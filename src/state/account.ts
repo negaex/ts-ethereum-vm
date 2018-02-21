@@ -1,6 +1,7 @@
 import { Record } from '../lib/record';
 import { N256, Ox0 } from '../lib/N256';
 import { Storage, emptyStorage } from './storage';
+import { Map } from 'immutable';
 
 export type Address = N256;
 
@@ -19,3 +20,23 @@ export class Account extends Record<AccountInterface>({
   storage: emptyStorage,
   code: Buffer.from([]),
 }) { }
+
+export const emptyAccount = new Account();
+
+export class Accounts {
+  inner: Map<Address, Account>;
+  
+  constructor(inner: Map<Address, Account> = Map<Address, Account>()) {
+    this.inner = inner;
+  }
+
+  get(address: Address) {
+    return this.inner.get(address) || emptyAccount;
+  }
+
+  set(address: Address, account: Account): Accounts {
+    return new Accounts(this.inner.set(address, account));
+  }
+}
+
+export const emptyAccounts: Accounts = new Accounts();
