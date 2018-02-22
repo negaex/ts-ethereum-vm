@@ -4,6 +4,7 @@ import { Transaction } from '../state/transaction';
 import { Account, Address } from '../state/account';
 import { N256, Ox0 } from '../lib/N256';
 import { assemble } from '../assembler/assembler';
+import { runRPC } from './rpc_server';
 
 export class Node {
 
@@ -68,6 +69,10 @@ export class Node {
     } else {
       return this.blockchain.getBalance(address);
     }
+  }
+
+  runRPC(): void {
+    runRPC(this);
   }
 
 }
