@@ -1,19 +1,15 @@
 import { Node } from './node';
+import { N256 } from '../lib/N256';
 
-type RPCMethod = (node: Node) => object;
+type RPCMethod = (node: Node, params: any[]) => any;
 
 const notImplemented: RPCMethod = (node: Node) => {
-  return {
-    'error': 'Not implemented!'
-  };
+  throw new Error('RPC procedure not implemented');
 };
 
 export const methods: { [name: string]: RPCMethod } = {
-  'web3_clientVersion': (node: Node) => {
-    return {
-      'result': 'ts-ethereum-vm 0.0.0',
-    };
-  },
+  'web3_clientVersion':
+    (node: Node) => 'ts-ethereum-vm 0.0.0',
 
   'web3_sha3': notImplemented,
   'net_version': notImplemented,
@@ -22,24 +18,24 @@ export const methods: { [name: string]: RPCMethod } = {
   'eth_protocolVersion': notImplemented,
   'eth_syncing': notImplemented,
 
-  'eth_coinbase': (node: Node) => {
-    return {
-      'result': node.coinbase,
-    };
-  },
+  'eth_coinbase':
+    (node: Node) => node.coinbase,
 
-  'eth_mining': notImplemented,
-  'eth_hashrate': notImplemented,
+  'eth_mining':
+    (node: Node) => false,
+
+  'eth_hashrate':
+    (node: Node) => 0,
+
   'eth_gasPrice': notImplemented,
   'eth_accounts': notImplemented,
 
-  'eth_blockNumber': (node: Node) => {
-    return {
-      'result': node.blockchain.blocks.size,
-    };
-  },
+  'eth_blockNumber':
+    (node: Node) => node.blockchain.blocks.size,
 
-  'eth_getBalance': notImplemented,
+  'eth_getBalance': (node: Node, params: any[]) =>
+    node.getBalance(params[0], params[1]),
+
   'eth_getStorageAt': notImplemented,
   'eth_getTransactionCount': notImplemented,
   'eth_getBlockTransactionCountByHash': notImplemented,

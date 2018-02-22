@@ -20,10 +20,11 @@ class RPCListener {
     rpc = async (body: any) => {
         console.log(`JSON: ${body}`);
         let _json = JSON.parse(body); // might throw error
-        return methods[_json.method](this.node);
+        return methods[_json.method](this.node, _json.params);
     }
 
     requestListener = (request: any, response: any) => {
+        console.log('Received connection');
         response.setHeader('Content-Type', 'application/json');
 
         // buffer for incoming data
@@ -39,8 +40,13 @@ class RPCListener {
             let body: string = buf !== null ? buf.toString() : null;
 
             this.rpc(body).then(res => {
-                console.log(JSON.stringify(res));
-                response.end(JSON.stringify(res));
+                const jsonRes = {
+                    'id': 1,
+                    'jsonrpc': '2.0',
+                    'result': res,
+                };
+                console.log(JSON.stringify(jsonRes));
+                response.end(JSON.stringify(jsonRes));
             }).catch(err => {
                 console.error(err);
                 response.statusCode = 500;

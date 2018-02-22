@@ -36,6 +36,9 @@ export class Accounts {
   }
 
   get(address: Address) {
+    if (!(address instanceof N256)) {
+      throw new Error('Invalid address');
+    }
     return this.inner.get(address) || emptyAccount;
   }
 

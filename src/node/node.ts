@@ -63,11 +63,13 @@ export class Node {
     this.pending = null;
   }
 
-  balanceOf(address: Address, pending: boolean = true): N256 {
-    if (pending && this.pending) {
-      return this.pending.accounts.get(address).balance;
+  getBalance(_address: string, status: string): string {
+    const address = new N256(Buffer.from(_address, 'hex'));
+    // TODO: Check if status is a block number
+    if (status === 'pending' && this.pending) {
+      return this.pending.accounts.get(address).balance.toHex();
     } else {
-      return this.blockchain.getBalance(address);
+      return this.blockchain.getBalance(address).toHex();
     }
   }
 
