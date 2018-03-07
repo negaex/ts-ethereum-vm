@@ -6,7 +6,7 @@ The OpCode behaviour is implemented in [operations.ts](https://github.com/***REM
 
 ## Example
 
-Deploying the following code:
+Deploying the following code (first compiled by solc):
 
 ```js
 pragma solidity ^0.4.11;
