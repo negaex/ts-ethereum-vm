@@ -1,7 +1,8 @@
 import { Node } from './node';
 import { N256 } from '../lib/N256';
+import { Account, Address } from '../state/account';
 
-type RPCMethod = (node: Node, params: any[]) => any;
+export type RPCMethod = (node: Node, params: any[]) => any;
 
 const notImplemented: RPCMethod = (node: Node): any => {
   throw new Error('RPC procedure not implemented');
@@ -28,10 +29,12 @@ export const methods: { [name: string]: RPCMethod } = {
     (node: Node): number => 0,
 
   'eth_gasPrice': notImplemented,
-  'eth_accounts': notImplemented,
+  'eth_accounts':
+    (node: Node): string[] => 
+      [node.coinbase].map((x: Address) => x.toAddress()),
 
   'eth_blockNumber':
-    (node: Node): number => node.blockchain.blocks.size,
+    (node: Node): string => node.blockchain.blocks.size,
 
   'eth_getBalance': (node: Node, params: any[]): string =>
     node.getBalance(params[0], params[1]),

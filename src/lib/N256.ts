@@ -345,6 +345,11 @@ export class N256 {
     let n8s: N8[] = fromN256(this);
     return '0x' + n8s.map((x: N8) => x.toHex()).join('');
   }
+
+  toAddress(): string {
+    let n8s: N8[] = fromN256(this).slice(12, 32);
+    return '0x' + n8s.map((x: N8) => x.toHex()).join('');
+  }
 }
 
 export const Ox0: N256 = new N256(0);

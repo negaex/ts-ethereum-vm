@@ -46,6 +46,10 @@ export class Accounts {
     return new Accounts(this.inner.set(address, account));
   }
 
+  list(): Address[] {
+    return this.inner.keySeq().toArray();
+  }
+
   toString(): string {
     return this.inner.map(
       (x: Account, k: Address) => `//${k.toHex()}:\\ ${x.toString()}`

@@ -11,7 +11,8 @@ import * as Immutable from 'immutable';
  *
  * @return A class that can be used to instantiate immutable objects.
  */
-export function Record<T>(data: Pick<T, keyof T>): any {
+// tslint:disable-next-line:typedef
+export function Record<T>(data: Pick<T, keyof T>) {
 
   // An interface of the properties that the class will have.
   type Props = {

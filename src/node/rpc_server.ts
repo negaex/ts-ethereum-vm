@@ -2,7 +2,7 @@
 
 import * as http from 'http';
 import { Node } from './node';
-import { methods } from './rpc_calls';
+import { methods, RPCMethod } from './rpc_calls';
 
 // we'll use a very very very simple routing mechanism
 // don't do something like this in production, ok technically you can...
@@ -20,7 +20,11 @@ class RPCListener {
     rpc = async (body: string): Promise<any> => {
         console.log(`JSON: ${body}`);
         let _json: any = JSON.parse(body); // might throw error
-        return methods[_json.method](this.node, _json.params);
+        const method: RPCMethod = methods[_json.method];
+        if (method == null) {
+            throw `Unknown method ${_json.method}`;
+        }
+        return method(this.node, _json.params);
     }
 
     requestListener = (request: any, response: any): void => {
@@ -38,6 +42,12 @@ class RPCListener {
         // on end proceed with compute
         request.on('end', () => {
             let body: string = buf !== null ? buf.toString() : null;
+
+            if (body === null) {
+                response.statusCode = 200;
+                response.end('{}');
+                return;
+            }
 
             this.rpc(body).then((res: string) => {
                 const jsonRes: object = {

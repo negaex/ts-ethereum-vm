@@ -3,13 +3,13 @@ import { N256, Bit, BitList, fromNum, pad } from './N256';
 
 type N8Param = number | N8 | BitList;
 
-export const fromN256 = (n: N256): N8[] => {
+export function fromN256(n: N256): N8[] {
   const ret: N8[] = [];
-  for (let i = 0; i < 256; i += 8) {
+  for (let i: number = 0; i < 256; i += 8) {
     ret.push(new N8(n.value.slice(i, i + 8).toList()));
   }
   return ret;
-};
+}
 
 export class N8 {
   value: BitList;
@@ -31,11 +31,11 @@ export class N8 {
   }
 
   toNumber(): number {
-    return parseInt(this.value.map(x => x ? 1 : 0).join(''), 2);
+    return parseInt(this.value.map((x: boolean) => x ? 1 : 0).join(''), 2);
   }
 
   toHex(): string {
-    let ret = parseInt(this.value.map(x => x ? 1 : 0).join(''), 2).toString(16);
+    let ret: string = parseInt(this.value.map((x: boolean) => x ? 1 : 0).join(''), 2).toString(16);
     if (ret.length === 1) {
       ret = '0' + ret;
     }
