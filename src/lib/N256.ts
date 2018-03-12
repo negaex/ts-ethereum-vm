@@ -6,31 +6,31 @@ export type Bit = boolean;
 export type BitList = List<Bit>;
 type N256Param = number | N256 | BitList | Buffer | string;
 
-export const pad = (arr: BitList, length: number): BitList => {
+export function pad(arr: BitList, length: number): BitList {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
-  const diff = length - arr.size;
+  const diff: number = length - arr.size;
   return List(new Array(diff).fill(false)).push(...arr.toArray());
-};
+}
 
-export const padRight = (arr: BitList, length: number): BitList => {
+export function padRight(arr: BitList, length: number): BitList {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
-  const diff = length - arr.size;
+  const diff: number = length - arr.size;
   return arr.concat(List(new Array(diff).fill(false))).toList();
-};
+}
 
-export const fromString = (bin: string, length: number): BitList => {
-  const arr = bin.split('').map(x => (x === '1'));
+export function fromString(bin: string, length: number): BitList {
+  const arr: boolean[] = bin.split('').map((x: string) => (x === '1'));
   // console.log(arr);
   return pad(List(arr), length);
-};
+}
 
-export const fromNum = (bin: number, length: number): BitList => {
+export function fromNum(bin: number, length: number): BitList {
   return fromString(bin.toString(2), length);
-};
+}
 
-export const fromBuffer = (buff: Buffer, rightPadding: boolean = false): BitList => {
+export function fromBuffer(buff: Buffer, rightPadding: boolean = false): BitList {
   let arr: List<Bit> = List<Bit>();
-  for (let i = 0; i < buff.length; i++) {
+  for (let i: number = 0; i < buff.length; i++) {
     arr = arr.concat(new N8(buff[i]).value).toList();
     // arr = List<N8>([new N8(buff[i])]).concat(arr).toList();
   }
@@ -38,7 +38,7 @@ export const fromBuffer = (buff: Buffer, rightPadding: boolean = false): BitList
     return padRight(arr, 256);
   }
   return pad(arr, 256);
-};
+}
 
 /**
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -76,7 +76,7 @@ export class N256 {
 
   greaterThan(other: N256Param): boolean {
     other = new N256(other);
-    for (let i = 0; i < 256; i++) {
+    for (let i: number = 0; i < 256; i++) {
       if (this.value.get(i) > other.value.get(i)) {
         return true;
       } else if (this.value.get(i) < other.value.get(i)) {
@@ -88,7 +88,7 @@ export class N256 {
 
   lessThan(other: N256Param): boolean {
     other = new N256(other);
-    for (let i = 0; i < 256; i++) {
+    for (let i: number = 0; i < 256; i++) {
       if (this.value.get(i) > other.value.get(i)) {
         return false;
       } else if (this.value.get(i) < other.value.get(i)) {
@@ -160,10 +160,10 @@ export class N256 {
 
   add(other: N256Param): N256 {
     other = new N256(other);
-    const ret = new N256();
+    const ret: N256 = new N256();
 
     let carry: number = 0;
-    for (let i = 255; i >= 0; i--) {
+    for (let i: number = 255; i >= 0; i--) {
       const bitsum: number = (other.value.get(i) ? 1 : 0) +
         (this.value.get(i) ? 1 : 0) +
         carry;
@@ -178,10 +178,10 @@ export class N256 {
     // Is add(other.not()) any slower?
 
     other = new N256(other);
-    const ret = new N256();
+    const ret: N256 = new N256();
 
     let carry: number = 0;
-    for (let i = 255; i >= 0; i--) {
+    for (let i: number = 255; i >= 0; i--) {
       const bitsum: number = (other.value.get(i) ? 1 : 0) + carry;
       if (!this.value.get(i)) {
         ret.value = ret.value.set(i, (bitsum === 1));
@@ -206,10 +206,10 @@ export class N256 {
   }
 
   mul(other: N256Param): N256 {
-    let right = new N256(other);
-    let ret = new N256();
+    let right: N256 = new N256(other);
+    let ret: N256 = new N256();
 
-    for (let i = 255; i >= 0; i--) {
+    for (let i: number = 255; i >= 0; i--) {
       if (this.value.get(i)) {
         ret = ret.add(right);
       }
@@ -220,17 +220,17 @@ export class N256 {
   }
 
   div(other: N256Param): N256 {
-    let dividend = new N256(this);
-    let denom = new N256(other); // divisor
-    let current = Ox1;
-    let answer = Ox0;
+    let dividend: N256 = new N256(this);
+    let denom: N256 = new N256(other); // divisor
+    let current: N256 = Ox1;
+    let answer: N256 = Ox0;
 
     if (denom.isZero()) {
       return Ox0;
     }
 
-    const limit = Ox0.not().shiftRight(1);
-    let overflowed = false;
+    const limit: N256 = Ox0.not().shiftRight(1);
+    let overflowed: boolean = false;
     while (denom.lessThanOrEqual(dividend)) {
       if (denom.greatherThanOrEqual(limit)) {
         overflowed = true;
@@ -265,7 +265,7 @@ export class N256 {
     if (other.equals(Ox1.shiftLeft(255).toNegative()) && this.equals(Ox1.toNegative())) {
       return Ox1.shiftLeft(255).toNegative();
     }
-    let ret = this.abs().div(other.abs());
+    let ret: N256 = this.abs().div(other.abs());
     if (this.isNegative()) {
       ret = ret.toNegative();
     }
@@ -294,7 +294,7 @@ export class N256 {
     if (other.isZero()) {
       return other;
     }
-    let ret = this.abs().mod(other.abs());
+    let ret: N256 = this.abs().mod(other.abs());
     if (this.isNegative()) {
       ret = ret.toNegative();
     }
@@ -322,15 +322,15 @@ export class N256 {
   }
 
   toString(): string {
-    return parseInt(this.value.map(x => x ? 1 : 0).join(''), 2).toString();
+    return parseInt(this.value.map((x: boolean) => x ? 1 : 0).join(''), 2).toString();
   }
 
   toBinary(): string {
-    return this.value.map(x => x ? 1 : 0).join('').replace(/^0+/, '') || '0';
+    return this.value.map((x: boolean) => x ? 1 : 0).join('').replace(/^0+/, '') || '0';
   }
 
   toNumber(): number {
-    return parseInt(this.value.map(x => x ? 1 : 0).join(''), 2);
+    return parseInt(this.value.map((x: boolean) => x ? 1 : 0).join(''), 2);
   }
 
   toSignedNumber(): number {
@@ -342,12 +342,12 @@ export class N256 {
   }
 
   toHex(): string {
-    let n8s = fromN256(this);
-    return '0x' + n8s.map(x => x.toHex()).join('');
+    let n8s: N8[] = fromN256(this);
+    return '0x' + n8s.map((x: N8) => x.toHex()).join('');
   }
 }
 
-export const Ox0 = new N256(0);
-export const Ox1 = new N256(1);
-export const Ox2 = new N256(2);
-export const Ox3 = new N256(3);
+export const Ox0: N256 = new N256(0);
+export const Ox1: N256 = new N256(1);
+export const Ox2: N256 = new N256(2);
+export const Ox3: N256 = new N256(3);

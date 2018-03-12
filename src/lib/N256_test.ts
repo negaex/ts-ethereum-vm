@@ -51,7 +51,7 @@ describe('N256', () => {
     (new N256(16129)).div(127).toNumber().should.equal(127);
     ((Ox1).div(2)).toNumber().should.equal(0);
     ((new N256(5)).div(4)).toNumber().should.equal(1);
-    const num = (new N256(2)).exp(27).sub(1);
+    const num: N256 = (new N256(2)).exp(27).sub(1);
     (num.exp(2)).div(num).toBinary().should.equal(num.toBinary());
     (Ox0.not()).div(2).toBinary().should.equal(new N256(2).exp(255).sub(1).toBinary());
   });

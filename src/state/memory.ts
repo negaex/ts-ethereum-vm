@@ -18,14 +18,14 @@ export class Memory extends Record<MemoryInterface>({
     }
 
     store(index: N256, value: N256): Memory {
-        let memory = this.memory;
+        let memory: Map<string, N8> = this.memory;
         const values: N8[] = fromN256(value);
-        let gas = 0;
-        for (let i = 0; i < values.length; i++) {
+        let gas: number = 0;
+        for (let i: number = 0; i < values.length; i++) {
             memory = memory.set(index.toBinary(), values[i]);
             index = index.add(1);
         }
-        let highest = this.highest;
+        let highest: N256 = this.highest;
         // Todo: should be aligned to %32
         if (index.greaterThan(this.highest)) {
             highest = index;
@@ -36,7 +36,7 @@ export class Memory extends Record<MemoryInterface>({
 
     retrieveBytes(index: N256, length: N256): Buffer {
         let ret: List<number> = List<number>();
-        for (let i = Ox0; i.lessThan(length); i = i.add(1)) {
+        for (let i: N256 = Ox0; i.lessThan(length); i = i.add(1)) {
             ret = ret.concat((this.memory.get(index.toBinary()) || new N8()).toNumber()).toList();
             index = index.add(1);
         }
@@ -45,7 +45,7 @@ export class Memory extends Record<MemoryInterface>({
 
     retrieve(index: N256): N256 {
         let ret: List<Bit> = List<Bit>();
-        for (let i = 0; i < 32; i++) {
+        for (let i: number = 0; i < 32; i++) {
             ret = ret.concat((this.memory.get(index.toBinary()) || new N8()).value).toList();
             index = index.add(1);
         }
@@ -53,9 +53,9 @@ export class Memory extends Record<MemoryInterface>({
     }
 
     log(): string {
-        let ret = '[';
-        const highest = this.highest;
-        for (let i = 0; i < highest.toNumber(); i++) {
+        let ret: string = '[';
+        const highest: N256 = this.highest;
+        for (let i: number = 0; i < highest.toNumber(); i++) {
             ret += ` ${(this.memory.get(new N256(i).toBinary()) || new N8()).toHex()}`;
         }
         ret += ' ]';

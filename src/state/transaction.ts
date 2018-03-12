@@ -31,17 +31,17 @@ export class Transaction extends Record<TransactionInterface>({
 }) {
 
   process(block: Block): MachineState {
-    let state = emptyMachineState;
+    let state: MachineState = emptyMachineState;
     state = state.set('currentBlock', block);
     state = state.set('currentTransaction', this);
     state = state.set('accounts', this.accounts);
-    let accounts = state.get('accounts');
-    let fromAccount = accounts.get(this.from);
+    let accounts: Accounts = state.get('accounts');
+    let fromAccount: Account = accounts.get(this.from);
 
     const deployingContract: boolean = this.to.isZero();
 
-    let toAccount;
-    let to = this.to;
+    let toAccount: Account;
+    let to: N256 = this.to;
     if (deployingContract) {
       // TODO: Implement RLP encoding
       to = sha3(fromAccount.address.add(fromAccount.nonce));
@@ -63,14 +63,14 @@ export class Transaction extends Record<TransactionInterface>({
     if (deployingContract) {
       state = state.set('code', this.data);
       state = state.set('callData', this.data);
-      const uploadedCode = run(state, true).returnValue;
+      const uploadedCode: Buffer = run(state, true).returnValue;
       toAccount = toAccount.set('code', uploadedCode);
       // TODO: If someone has the private keys (very unlikely), is it set to 1 or nonce+1?
       toAccount = toAccount.set('nonce', toAccount.nonce.add(1));
       accounts = accounts.set(this.from, fromAccount).set(to, toAccount);
       state = state.set('accounts', accounts);
     } else {
-      const code = this.accounts.get(to).code;
+      const code: Buffer = this.accounts.get(to).code;
       state = state.set('code', accounts.get(to).code);
       state = state.set('callData', this.data);
       state = run(state, true);
@@ -87,4 +87,4 @@ export class Transaction extends Record<TransactionInterface>({
 
 }
 
-export const emptyTransaction = new Transaction();
+export const emptyTransaction: Transaction = new Transaction();

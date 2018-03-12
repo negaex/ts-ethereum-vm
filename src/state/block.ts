@@ -55,9 +55,9 @@ export class Block extends Record<BlockInterface>({
     if (!this.pending) {
       throw new Error('Block already commited.');
     }
-    let block = this;
+    let block: Block = this;
     tx = tx.set('accounts', this.accounts);
-    const newState = tx.process(block);
+    const newState: MachineState = tx.process(block);
     block = block.set('accounts', newState.accounts);
     block = block.set('transactions', block.transactions.push(tx));
 
@@ -66,15 +66,15 @@ export class Block extends Record<BlockInterface>({
 
 }
 
-export const newBlock = (beneficiary: Address, accounts: Accounts): Block => {
-  let block = emptyBlock;
+export function newBlock(beneficiary: Address, accounts: Accounts): Block {
+  let block: Block = emptyBlock;
   block = block.set('accounts', accounts);
   block = block.set('beneficiary', beneficiary);
-  let beneficiaryAccount = accounts.get(beneficiary);
+  let beneficiaryAccount: Account = accounts.get(beneficiary);
   beneficiaryAccount = beneficiaryAccount.set('balance', beneficiaryAccount.balance.add(5));
   accounts = accounts.set(beneficiary, beneficiaryAccount);
   block = block.set('accounts', accounts);
   return block;
-};
+}
 
-export const emptyBlock = new Block();
+export const emptyBlock: Block = new Block();

@@ -111,8 +111,8 @@ export class MachineState extends Record<MachineStateInterface>({
 
   // Storage
   storeAt(location: N256, value: N256): MachineState {
-    let account = this.accounts.get(this.address);
-    let storage = emptyStorage;
+    let account: Account = this.accounts.get(this.address);
+    let storage: Storage = emptyStorage;
     if (account) {
       storage = account.storage;
     }
@@ -164,8 +164,8 @@ export class MachineState extends Record<MachineStateInterface>({
 
   toString(): string {
     // console.log(this.memory.log());
-    const memStr = this.memory.log();
-    const account = this.accounts.get(this.address);
+    const memStr: String = this.memory.log();
+    const account: Account = this.accounts.get(this.address);
     return highlight(`//PC\\: ${this.programCounter}, //running\\: ${this.running}, //gasUsed\\: ${this.gasUsed}\n\
 //stack\\: ${stackToString(this.stack)}
 //storage\\: ${storageToString(account ? account.storage : emptyStorage)}
@@ -173,4 +173,4 @@ export class MachineState extends Record<MachineStateInterface>({
   }
 }
 
-export const emptyMachineState = new MachineState();
+export const emptyMachineState: MachineState = new MachineState();

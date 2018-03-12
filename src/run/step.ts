@@ -4,12 +4,12 @@ import { MachineState as State } from '../state/machinestate';
 import { operations, Operation, DynamicOp } from './operations';
 import { VMError, highlight } from '../errors';
 
-export const step = (state: State, opcode: OpCode, log: boolean): State => {
-  const regex = /([A-Z]+)([0-9]+)?/;
-  const [_, opName, opParam] = regex.exec(opcode.mnemonic);
+export function step (state: State, opcode: OpCode, log: boolean): State {
+  const regex: RegExp = /([A-Z]+)([0-9]+)?/;
+  const [_, opName, opParam]: string[] = regex.exec(opcode.mnemonic);
   let operation: Operation;
   if (opParam) {
-    const dynamic = (operations[opName] as DynamicOp);
+    const dynamic: DynamicOp = (operations[opName] as DynamicOp);
     if (!dynamic) {
       throw new VMError(`Parameterd operation not implemented: //${opcode.mnemonic}\\ (0x${opcode.code.toString(16)})`);
     }
@@ -47,4 +47,4 @@ export const step = (state: State, opcode: OpCode, log: boolean): State => {
 
   // Return new state
   return state;
-};
+}

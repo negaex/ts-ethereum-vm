@@ -17,13 +17,13 @@ class RPCListener {
         this.node = node;
     }
 
-    rpc = async (body: any) => {
+    rpc = async (body: string): Promise<any> => {
         console.log(`JSON: ${body}`);
-        let _json = JSON.parse(body); // might throw error
+        let _json: any = JSON.parse(body); // might throw error
         return methods[_json.method](this.node, _json.params);
     }
 
-    requestListener = (request: any, response: any) => {
+    requestListener = (request: any, response: any): void => {
         console.log('Received connection');
         response.setHeader('Content-Type', 'application/json');
 
@@ -39,15 +39,15 @@ class RPCListener {
         request.on('end', () => {
             let body: string = buf !== null ? buf.toString() : null;
 
-            this.rpc(body).then(res => {
-                const jsonRes = {
+            this.rpc(body).then((res: string) => {
+                const jsonRes: object = {
                     'id': 1,
                     'jsonrpc': '2.0',
                     'result': res,
                 };
                 console.log(JSON.stringify(jsonRes));
                 response.end(JSON.stringify(jsonRes));
-            }).catch(err => {
+            }).catch((err: Error) => {
                 console.error(err);
                 response.statusCode = 500;
                 response.end('oops! server error!');
@@ -56,10 +56,10 @@ class RPCListener {
     }
 }
 
-export const runRPC = (node: Node) => {
-    const listener = new RPCListener(node);
-    let server = http.createServer(listener.requestListener);
-    const PORT = process.env.NODE_PORT || 9090;
+export function runRPC(node: Node): void {
+    const listener: RPCListener = new RPCListener(node);
+    let server: http.Server = http.createServer(listener.requestListener);
+    const PORT: string | 9090 = process.env.NODE_PORT || 9090;
     console.log(`starting the server on port ${PORT}`);
     server.listen(PORT);
-};
+}

@@ -13,7 +13,7 @@ export class VMError extends Error {
   }
 }
 
-export const highlight = (msg: string): string => {
+export function highlight(msg: string): string {
   return msg.replace(new RegExp('//', 'g'), '\x1b[32m').replace(new RegExp('\\\\', 'g'), '\x1b[0m')
   .replace(new RegExp('<<', 'g'), '\x1b[33m').replace(new RegExp('>>', 'g'), '\x1b[0m');
-};
+}

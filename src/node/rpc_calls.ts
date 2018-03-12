@@ -3,13 +3,13 @@ import { N256 } from '../lib/N256';
 
 type RPCMethod = (node: Node, params: any[]) => any;
 
-const notImplemented: RPCMethod = (node: Node) => {
+const notImplemented: RPCMethod = (node: Node): any => {
   throw new Error('RPC procedure not implemented');
 };
 
 export const methods: { [name: string]: RPCMethod } = {
   'web3_clientVersion':
-    (node: Node) => 'ts-ethereum-vm 0.0.0',
+    (node: Node): string => 'ts-ethereum-vm 0.0.0',
 
   'web3_sha3': notImplemented,
   'net_version': notImplemented,
@@ -19,21 +19,21 @@ export const methods: { [name: string]: RPCMethod } = {
   'eth_syncing': notImplemented,
 
   'eth_coinbase':
-    (node: Node) => node.coinbase,
+    (node: Node): N256 => node.coinbase,
 
   'eth_mining':
-    (node: Node) => false,
+    (node: Node): boolean => false,
 
   'eth_hashrate':
-    (node: Node) => 0,
+    (node: Node): number => 0,
 
   'eth_gasPrice': notImplemented,
   'eth_accounts': notImplemented,
 
   'eth_blockNumber':
-    (node: Node) => node.blockchain.blocks.size,
+    (node: Node): number => node.blockchain.blocks.size,
 
-  'eth_getBalance': (node: Node, params: any[]) =>
+  'eth_getBalance': (node: Node, params: any[]): string =>
     node.getBalance(params[0], params[1]),
 
   'eth_getStorageAt': notImplemented,

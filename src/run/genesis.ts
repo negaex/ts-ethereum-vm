@@ -4,7 +4,7 @@ import { Transaction } from '../state/transaction';
 import { List } from 'immutable';
 import { Accounts, Account } from '../state/account';
 
-export const genesisBlock = new Block({
+export const genesisBlock: Block = new Block({
   parentHash: Ox0,
   beneficiary: Ox0,
   difficulty: Ox0,

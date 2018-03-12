@@ -98,12 +98,12 @@ export const instructions: { [code: number]: OpCode } = {
 };
 
 // Push
-for (let i = 0; i < 33; i++) {
+for (let i: number = 0; i < 33; i++) {
   instructions[0x5f + i] = { mnemonic: `PUSH${i}`, pop: 0, push: 1, gas: 3, code: 0x5f + i };
 }
 
 // duplicate and swap
-for (let i = 1; i < 17; i++) {
+for (let i: number = 1; i < 17; i++) {
   instructions[0x7f + i] = { mnemonic: `DUP${i}`, pop: i, push: i + 1, gas: 3, code: 0x7f + i };
   instructions[0x8f + i] = { mnemonic: `SWAP${i}`, pop: i + 1, push: i + 1, gas: 3, code: 0x8f + i };
 }

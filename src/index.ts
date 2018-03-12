@@ -19,7 +19,7 @@ import { Ox0, Ox1, N256 } from './lib/N256';
 import { List } from 'immutable';
 import { highlight } from './errors';
 
-const node = new Node(Ox0);
+const node: Node = new Node(Ox0);
 node.runRPC();
 // node.newTransaction(
 //   Ox0,

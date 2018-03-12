@@ -15,7 +15,7 @@ export class Blockchain extends Record<BlockchainInterface>({
 }) {
 
   addBlock(block: Block): Blockchain {
-    let blockchain = this;
+    let blockchain: Blockchain = this;
     blockchain = blockchain.set('blocks', blockchain.blocks.push(block.commit()));
 
     return blockchain;
@@ -27,4 +27,4 @@ export class Blockchain extends Record<BlockchainInterface>({
 
 }
 
-export const emptyBlockchain = new Blockchain();
+export const emptyBlockchain: Blockchain = new Blockchain();

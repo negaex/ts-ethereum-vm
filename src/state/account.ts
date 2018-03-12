@@ -26,7 +26,7 @@ export class Account extends Record<AccountInterface>({
   }
 }
 
-export const emptyAccount = new Account();
+export const emptyAccount: Account = new Account();
 
 export class Accounts {
   inner: Map<Address, Account>;
@@ -35,7 +35,7 @@ export class Accounts {
     this.inner = inner;
   }
 
-  get(address: Address) {
+  get(address: Address): Account {
     if (!(address instanceof N256)) {
       throw new Error('Invalid address');
     }
@@ -47,7 +47,9 @@ export class Accounts {
   }
 
   toString(): string {
-    return this.inner.map((x, k) => `//${k.toHex()}:\\ ${x.toString()}`).join('\n');
+    return this.inner.map(
+      (x: Account, k: Address) => `//${k.toHex()}:\\ ${x.toString()}`
+    ).join('\n');
   }
 }
 

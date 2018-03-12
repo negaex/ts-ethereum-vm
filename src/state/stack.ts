@@ -6,6 +6,6 @@ export type Stack = List<N256>;
 
 export const emptyStack: Stack = List<N256>();
 
-export const stackToString = (stack: Stack): string => {
-  return '[ ' + stack.map(n => n.toBinary()).join(', ') + ' ]';
-};
+export function stackToString(stack: Stack): string {
+  return '[ ' + stack.map((n: N256) => n.toBinary()).join(', ') + ' ]';
+}
