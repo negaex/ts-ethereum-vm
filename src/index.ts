@@ -18,8 +18,11 @@ import { Node } from './node/node';
 import { Ox0, Ox1, N256 } from './lib/N256';
 import { List } from 'immutable';
 import { highlight } from './errors';
+import { loadState } from './node/load_state';
 
+import { state } from './state';
 const node: Node = new Node(Ox0);
+node.blockchain = loadState(state);
 node.runRPC();
 // node.newTransaction(
 //   Ox0,

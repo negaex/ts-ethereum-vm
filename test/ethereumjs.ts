@@ -115,7 +115,7 @@ const skipVM = [
   'randomTest643' // TODO fix this
 ];
 
-function getSkipTests (choices: any) {
+function getSkipTests(choices: any) {
   let skipTests: any = [];
   choices = choices.toLowerCase();
   if (choices !== 'none') {
@@ -167,13 +167,13 @@ describe('EthereumJS', () => {
 
   it('', function (done: any) {
     console.log(tests.length);
-    tests.forEach(function([test, testName, fileName]: any, indexIfYouNeedIt: number) {
-        if (testName !== 'randomVMtest') {
-          console.log(`file: ${fileName} test: ${testName}`);
-          runVMTest({}, test, true);
-        }
+    tests.forEach(function ([test, testName, fileName]: any, indexIfYouNeedIt: number) {
+      if (testName !== 'randomVMtest') {
+        console.log(`file: ${fileName} test: ${testName}`);
+        runVMTest({}, test, true);
+      }
     });
     done();
-}).timeout(10000);
+  }).timeout(10000);
 
 });

@@ -1,6 +1,6 @@
 const Web3: any = require('web3');
 const web3: any = new Web3(
-  new Web3.providers.HttpProvider('http://localhost:9090')
+  new Web3.providers.HttpProvider('http://localhost:8545')
 );
 
 async function main(): Promise<void> {

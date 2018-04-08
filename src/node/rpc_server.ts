@@ -18,7 +18,7 @@ class RPCListener {
     }
 
     rpc = async (body: string): Promise<any> => {
-        console.log(`JSON: ${body}`);
+        console.log(`RPC: ${body}`);
         let _json: any = JSON.parse(body); // might throw error
         const method: RPCMethod = methods[_json.method];
         if (method == null) {
@@ -28,7 +28,7 @@ class RPCListener {
     }
 
     requestListener = (request: any, response: any): void => {
-        console.log('Received connection');
+        // console.log('Received connection');
         response.setHeader('Content-Type', 'application/json');
 
         // buffer for incoming data
@@ -55,7 +55,7 @@ class RPCListener {
                     'jsonrpc': '2.0',
                     'result': res,
                 };
-                console.log(JSON.stringify(jsonRes));
+                console.log("OUT: " + JSON.stringify(jsonRes) + "\n");
                 response.end(JSON.stringify(jsonRes));
             }).catch((err: Error) => {
                 console.error(err);
@@ -69,7 +69,7 @@ class RPCListener {
 export function runRPC(node: Node): void {
     const listener: RPCListener = new RPCListener(node);
     let server: http.Server = http.createServer(listener.requestListener);
-    const PORT: string | 9090 = process.env.NODE_PORT || 9090;
+    const PORT: string | 8545 = process.env.NODE_PORT || 8545;
     console.log(`starting the server on port ${PORT}`);
     server.listen(PORT);
 }

@@ -23,7 +23,7 @@ export class N8 {
       this.value = (num as N8).value;
     } else if (typeof num === 'number') {
       // number
-      this.value = fromNum(num, 8);
+      this.value = fromNum(8, num);
     } else {
       // BitList
       this.value = pad(num, 8);

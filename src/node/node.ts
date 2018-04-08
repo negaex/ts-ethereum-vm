@@ -73,8 +73,21 @@ export class Node {
     }
   }
 
+  getBlockNumber(): string {
+    const n = this.blockchain.blocks.size;
+    let nStr = n.toString(16);
+    if (nStr.length % 2 == 1) {
+      nStr = "0" + nStr;
+    }
+    return "0x" + nStr;
+  }
+
   runRPC(): void {
     runRPC(this);
+  }
+
+  loadState(): void {
+
   }
 
 }

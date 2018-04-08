@@ -18,14 +18,23 @@ export function padRight(arr: BitList, length: number): BitList {
   return arr.concat(List(new Array(diff).fill(false))).toList();
 }
 
-export function fromString(bin: string, length: number): BitList {
+export function fromString(length: number, bin: string, type?: string): BitList {
+
+  if (bin.slice(0, 2) === "0x") {
+    bin = bin.slice(2, bin.length);
+    type = "hex";
+  }
+
+  if (type === "hex") {
+    return fromBuffer(new Buffer(bin, "hex"));
+  }
+
   const arr: boolean[] = bin.split('').map((x: string) => (x === '1'));
-  // console.log(arr);
   return pad(List(arr), length);
 }
 
-export function fromNum(bin: number, length: number): BitList {
-  return fromString(bin.toString(2), length);
+export function fromNum(length: number, bin: number): BitList {
+  return fromString(length, bin.toString(2));
 }
 
 export function fromBuffer(buff: Buffer, rightPadding: boolean = false): BitList {
@@ -50,7 +59,7 @@ export function fromBuffer(buff: Buffer, rightPadding: boolean = false): BitList
 export class N256 {
   value: BitList;
 
-  constructor(num?: N256Param) {
+  constructor(num?: N256Param, from?: string) {
     if (num === undefined) {
       // Undefined
       this.value = List<Bit>(new Array(256).fill(false));
@@ -62,12 +71,12 @@ export class N256 {
       if (num < 0) {
         this.value = new N256(-num).not().add(1).value;
       } else {
-        this.value = fromNum(num, 256);
+        this.value = fromNum(256, num);
       }
     } else if (num instanceof Buffer) {
       this.value = fromBuffer(num);
     } else if (typeof num === 'string') {
-      this.value = fromString(num, 256);
+      this.value = fromString(256, num, from);
     } else {
       // N256Value
       this.value = pad(num, 256);
@@ -349,6 +358,22 @@ export class N256 {
   toAddress(): string {
     let n8s: N8[] = fromN256(this).slice(12, 32);
     return '0x' + n8s.map((x: N8) => x.toHex()).join('');
+  }
+
+  toBuffer(trim?: boolean): Buffer {
+    const buffer = Buffer.alloc(32)
+    let n8s: N8[] = fromN256(this);
+    for (let i = 0; i < 32; i++) {
+      buffer[i] = n8s[i].toNumber();
+    }
+    if (trim) {
+      let leading = 0;
+      while (leading < 32 && buffer[leading] == 0) {
+        leading++;
+      }
+      return buffer.slice(leading)
+    }
+    return buffer;
   }
 }
 
