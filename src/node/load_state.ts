@@ -8,7 +8,7 @@ import { assemble } from '../assembler/assembler';
 import { ecrecover } from '../crypto/crypto';
 
 export const loadState = (json: any): Blockchain => {
-    let blockchain = emptyBlockchain;
+    let blockchain = new Blockchain();
     let accounts = emptyAccounts;
 
 
@@ -27,11 +27,16 @@ export const loadState = (json: any): Blockchain => {
     // Genesis block
     const coinbase = new N256(json.genesisBlockHeader.coinbase, "hex");
     const genesis = newBlock(coinbase, accounts)
-    blockchain = blockchain.addBlock(genesis);
-
+    blockchain = blockchain.addBlock(genesis.commit());
 
 
     for (let blockData of json.blocks) {
+
+        if (blockData.reverted) {
+            // console.log(blockData);
+            continue;
+        }
+
         const coinbase = new N256(blockData.blockHeader.coinbase, "hex")
 
         let block = newBlock(coinbase, blockchain.getAccounts());
@@ -54,9 +59,7 @@ export const loadState = (json: any): Blockchain => {
             block = block.addTransaction(transaction);
         }
 
-        blockchain = blockchain.addBlock(genesis);
-
-
+        blockchain = blockchain.addBlock(block.commit());
 
     }
 

@@ -1,10 +1,12 @@
 import { Blockchain, emptyBlockchain } from '../state/blockchain';
 import { Block, newBlock } from '../state/block';
-import { Transaction } from '../state/transaction';
+import { Transaction, emptyTransaction } from '../state/transaction';
 import { Account, Accounts, Address } from '../state/account';
 import { N256, Ox0 } from '../lib/N256';
 import { assemble } from '../assembler/assembler';
 import { runRPC } from './rpc_server';
+
+type TAG = string | "latest" | "earliest" | "pending";
 
 export class Node {
 
@@ -59,7 +61,7 @@ export class Node {
   }
 
   mine(): void {
-    this.blockchain = this.blockchain.addBlock(this.pending);
+    this.blockchain = this.blockchain.addBlock(this.pending.commit());
     this.pending = null;
   }
 
@@ -74,12 +76,36 @@ export class Node {
   }
 
   getBlockNumber(): string {
-    const n = this.blockchain.blocks.size;
+    const n = this.blockchain.blocks.size - 1;
     let nStr = n.toString(16);
     if (nStr.length % 2 == 1) {
       nStr = "0" + nStr;
     }
     return "0x" + nStr;
+  }
+
+  call(from: Address, to: Address, gas: N256, gasPrice: N256, value: N256, data: Buffer, tag: TAG): Buffer {
+    let block;
+    switch (tag) {
+      case "latest":
+        block = this.blockchain.blocks.last();
+      case "earliest":
+        block = this.blockchain.blocks.first();
+      case "pending":
+        block = this.pending;
+      default:
+        const height = parseInt(tag, 10);
+        block = this.blockchain.blocks.get(height);
+    }
+
+    const tx = emptyTransaction
+      .set("gasPrice", gasPrice)
+      .set("gasLimit", gas)
+      .set("to", to)
+      .set("value", value)
+      .set("data", data);
+
+    return block.call(tx, from || Ox0);
   }
 
   runRPC(): void {

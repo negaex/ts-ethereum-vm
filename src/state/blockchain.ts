@@ -11,12 +11,15 @@ interface BlockchainInterface {
 }
 
 export class Blockchain extends Record<BlockchainInterface>({
-  blocks: List<Block>([genesisBlock])
+  blocks: List<Block>([])
 }) {
 
   addBlock(block: Block): Blockchain {
     let blockchain: Blockchain = this;
-    blockchain = blockchain.set('blocks', blockchain.blocks.push(block.commit()));
+    if (block.pending) {
+      block = block.commit();
+    }
+    blockchain = blockchain.set('blocks', blockchain.blocks.push(block));
     return blockchain;
   }
 
@@ -30,4 +33,4 @@ export class Blockchain extends Record<BlockchainInterface>({
 
 }
 
-export const emptyBlockchain: Blockchain = new Blockchain();
+export const emptyBlockchain: Blockchain = new Blockchain().addBlock(genesisBlock);

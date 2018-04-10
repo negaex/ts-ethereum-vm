@@ -40,7 +40,7 @@ export class Block extends Record<BlockInterface>({
   timestamp: Ox0,
   pending: true,
   transactions: List<Transaction>(),
-  
+
   accounts: emptyAccounts,
 }) {
 
@@ -57,11 +57,19 @@ export class Block extends Record<BlockInterface>({
     }
     let block: Block = this;
     tx = tx.set('accounts', this.accounts);
-    const newState: MachineState = tx.process(block);
+    const newState: MachineState = tx.process(block, tx.sender());
     block = block.set('accounts', newState.accounts);
     block = block.set('transactions', block.transactions.push(tx));
 
     return block;
+  }
+
+  call(tx: Partial<Transaction>, from: Address): Buffer {
+    let block: Block = this;
+    tx = tx.set('accounts', this.accounts);
+    const newState: MachineState = tx.process(block, from);
+
+    return newState.returnValue;
   }
 
 }

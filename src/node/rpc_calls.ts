@@ -49,7 +49,20 @@ export const methods: { [name: string]: RPCMethod } = {
   'eth_sign': notImplemented,
   'eth_sendTransaction': notImplemented,
   'eth_sendRawTransaction': notImplemented,
-  'eth_call': notImplemented,
+
+  'eth_call':
+    (node: Node, params: any): any => {
+      const callOpts = params[0];
+      const from = new N256(callOpts.from, "hex");
+      const to = new N256(callOpts.to, "hex");
+      const gas = new N256(callOpts.gas, "hex");
+      const gasPrice = new N256(callOpts.gasPrice, "hex");
+      const value = new N256(callOpts.value, "hex");
+      const data = new Buffer(callOpts.data, "hex");
+      const tag = params[1];
+      return "0x" + node.call(from, to, gas, gasPrice, value, data, tag).toString("hex");
+    },
+
   'eth_estimateGas': notImplemented,
   'eth_getBlockByHash': notImplemented,
   'eth_getBlockByNumber': notImplemented,

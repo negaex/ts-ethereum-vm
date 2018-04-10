@@ -73,14 +73,13 @@ export class Transaction extends Record<TransactionInterface>({
       .set('s', sig.s);
   }
 
-  process(block: Block): MachineState {
+  process(block: Block, from: Address): MachineState {
     let state: MachineState = emptyMachineState;
     state = state.set('currentBlock', block);
     state = state.set('currentTransaction', this);
     state = state.set('accounts', this.accounts);
     let accounts: Accounts = state.get('accounts');
 
-    const from = this.sender();
     let fromAccount: Account = accounts.get(from);
 
     const deployingContract: boolean = this.to.isZero();
@@ -108,17 +107,20 @@ export class Transaction extends Record<TransactionInterface>({
     if (deployingContract) {
       state = state.set('code', this.data);
       state = state.set('callData', this.data);
-      const uploadedCode: Buffer = run(state, true).returnValue;
+      const uploadedCode: Buffer = run(state, false).returnValue;
       toAccount = toAccount.set('code', uploadedCode);
       // TODO: If someone has the private keys (very unlikely), is it set to 1 or nonce+1?
       toAccount = toAccount.set('nonce', toAccount.nonce.add(1));
       accounts = accounts.set(from, fromAccount).set(to, toAccount);
       state = state.set('accounts', accounts);
+      console.log(`Contract deployed to ${to.toHex()}`)
     } else {
       const code: Buffer = this.accounts.get(to).code;
       state = state.set('code', accounts.get(to).code);
       state = state.set('callData', this.data);
-      state = run(state, true);
+      if (state.get('code').length > 0) {
+        state = run(state, false);
+      }
     }
 
     accounts = state.accounts;
