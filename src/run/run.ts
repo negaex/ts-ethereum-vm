@@ -5,7 +5,7 @@ import { operations, Operation } from './operations';
 import { step } from './step';
 import { InvalidBinary } from '../errors';
 
-export function run (state: MachineState, log: boolean = false): MachineState {
+export function run(state: MachineState, log: boolean = false): MachineState {
 
   if (log) {
     console.log(`Running code: ${state.code.toString('hex')}`);

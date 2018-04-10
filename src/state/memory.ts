@@ -7,11 +7,11 @@ interface MemoryInterface {
     memory: Map<string, N8>;
     highest: N256;
 }
-  
+
 export class Memory extends Record<MemoryInterface>({
     memory: Map<string, N8>(),
     highest: Ox0,
-  }) {
+}) {
 
     storeByte(index: N256, value: N8): Memory {
         return this.set('memory', this.memory.set(index.toBinary(), value));

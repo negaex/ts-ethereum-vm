@@ -14,7 +14,7 @@ export const genesisBlock: Block = new Block({
   timestamp: Ox0,
   pending: false,
   transactions: List<Transaction>(),
-  
+
   accounts: new Accounts().set(
     new N256(0),
     new Account({

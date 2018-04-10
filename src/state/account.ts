@@ -30,7 +30,7 @@ export const emptyAccount: Account = new Account();
 
 export class Accounts {
   inner: Map<Address, Account>;
-  
+
   constructor(inner: Map<Address, Account> = Map<Address, Account>()) {
     this.inner = inner;
   }

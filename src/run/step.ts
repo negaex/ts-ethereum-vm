@@ -4,7 +4,7 @@ import { MachineState as State } from '../state/machinestate';
 import { operations, Operation, DynamicOp } from './operations';
 import { VMError, highlight } from '../errors';
 
-export function step (state: State, opcode: OpCode, log: boolean): State {
+export function step(state: State, opcode: OpCode, log: boolean): State {
   const regex: RegExp = /([A-Z]+)([0-9]+)?/;
   const [_, opName, opParam]: string[] = regex.exec(opcode.mnemonic);
   let operation: Operation;
@@ -39,7 +39,7 @@ export function step (state: State, opcode: OpCode, log: boolean): State {
   if (log) {
     console.log(`\r─ ${state.logInfo} ${'─'.repeat(Math.max(0, process.stdout.columns - 3 - state.logInfo.length))}`);
     console.log(state + '\n' + '─'.repeat(process.stdout.columns));
-    
+
     if (!state.running) {
       console.log(highlight(`//RETURNED\\: <<${state.returnValue.toString('hex')}>>`));
     }
