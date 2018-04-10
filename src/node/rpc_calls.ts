@@ -31,7 +31,7 @@ export const methods: { [name: string]: RPCMethod } = {
   'eth_gasPrice': notImplemented,
   'eth_accounts':
     (node: Node): string[] =>
-      [node.coinbase].map((x: Address) => x.toAddress()),
+      [node.coinbase].map((x: Address) => x.toHexAddress()),
 
   'eth_blockNumber':
     (node: Node): string => node.getBlockNumber(),

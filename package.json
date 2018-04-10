@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "tsc -p ./ --target ES5 && node build/src/index.js",
+    "testing": "tsc -p ./ --target ES5 && node build/src/testing.js",
     "watch": "forever ./node_modules/.bin/nodemon --exitcrash --exec \"npm run start\" ./src/index.ts",
     "test": "mocha -r ts-node/register src/**/*_test.ts test/**/*.ts",
     "test-rpc": "cd test/rpc/rpc-tests && make test.eth"

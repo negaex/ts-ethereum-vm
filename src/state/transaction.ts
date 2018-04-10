@@ -11,6 +11,14 @@ import { Signature, ecrecover, ecsign } from '../crypto/crypto';
 
 const rlp = require('rlp');
 
+export const contractAddress = (creator: Address, nonce: N256): Address => {
+  const raw = [
+    creator.toBuffer(true),
+    nonce.toBuffer(true),
+  ];
+  return sha3(rlp.encode(raw)).toAddress();
+}
+
 interface TransactionInterface {
   nonce: N256;
   gasPrice: N256;
@@ -88,7 +96,8 @@ export class Transaction extends Record<TransactionInterface>({
     let to: N256 = this.to;
     if (deployingContract) {
       // TODO: Implement RLP encoding
-      to = sha3(fromAccount.address.add(fromAccount.nonce));
+      to = contractAddress(fromAccount.address, fromAccount.nonce);
+      // to = sha3(fromAccount.address.add(fromAccount.nonce));
       toAccount = accounts.get(to);
     } else {
       toAccount = accounts.get(this.to);
@@ -113,7 +122,7 @@ export class Transaction extends Record<TransactionInterface>({
       toAccount = toAccount.set('nonce', toAccount.nonce.add(1));
       accounts = accounts.set(from, fromAccount).set(to, toAccount);
       state = state.set('accounts', accounts);
-      console.log(`Contract deployed to ${to.toHex()}`)
+      console.log(`Contract deployed to ${to.toHexAddress()}`)
     } else {
       const code: Buffer = this.accounts.get(to).code;
       state = state.set('code', accounts.get(to).code);

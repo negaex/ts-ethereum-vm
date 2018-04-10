@@ -330,6 +330,22 @@ export class N256 {
     return new N256(this.value.map((bit: Bit): Bit => !bit).toList());
   }
 
+  signExtend(k256: N256): N256 {
+    const ret = new N256(this);
+    const k = k256.toNumber();
+
+    const t = 256 - 8 * (k + 1)
+    const sign = ret.value.get(t);
+    for (let i = 0; i < t; i++) {
+      ret.value = ret.value.set(i, sign);
+    }
+
+    return ret;
+  }
+
+
+  // Conversions
+
   toString(): string {
     return parseInt(this.value.map((x: boolean) => x ? 1 : 0).join(''), 2).toString();
   }
@@ -350,17 +366,25 @@ export class N256 {
     }
   }
 
+  toAddress(): N256 {
+    const address = new N256(this);
+    for (let i = 0; i < 12 * 8; i++) {
+      address.value = address.value.set(i, false);
+    }
+    return address;
+  }
+
   toHex(): string {
     let n8s: N8[] = fromN256(this);
     return '0x' + n8s.map((x: N8) => x.toHex()).join('');
   }
 
-  toAddress(): string {
+  toHexAddress(): string {
     let n8s: N8[] = fromN256(this).slice(12, 32);
     return '0x' + n8s.map((x: N8) => x.toHex()).join('');
   }
 
-  toBuffer(trim?: boolean): Buffer {
+  toBuffer(trim?: boolean, minLength?: number): Buffer {
     const buffer = Buffer.alloc(32)
     let n8s: N8[] = fromN256(this);
     for (let i = 0; i < 32; i++) {
@@ -368,7 +392,8 @@ export class N256 {
     }
     if (trim) {
       let leading = 0;
-      while (leading < 32 && buffer[leading] == 0) {
+      const limit = minLength ? minLength : 32;
+      while (leading < limit && buffer[leading] == 0) {
         leading++;
       }
       return buffer.slice(leading)
