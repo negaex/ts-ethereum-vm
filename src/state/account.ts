@@ -1,11 +1,11 @@
-import { Record } from '../lib/record';
+import { Interface, Record } from '../lib/record';
 import { N256, Ox0 } from '../lib/N256';
 import { Storage, emptyStorage, storageToString } from './storage';
 import { Map } from 'immutable';
 
 export type Address = N256;
 
-interface AccountInterface {
+export interface AccountInterface {
   address: Address;
   nonce: N256;
   balance: N256;

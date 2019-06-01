@@ -1,7 +1,7 @@
 import { List } from 'immutable';
 import { N256, Bit, BitList, fromNum, pad } from './N256';
 
-type N8Param = number | N8 | BitList;
+export type N8Param = number | N8 | BitList;
 
 export function fromN256(n: N256): N8[] {
   const ret: N8[] = [];

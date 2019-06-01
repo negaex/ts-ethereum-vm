@@ -2,7 +2,7 @@
 
 > This library is a work in progress.
 
-The OpCode behaviour is implemented in [operations.ts](https://github.com/***REMOVED***/ts-ethereum-vm/blob/master/src/run/operations.ts).
+The OpCode behaviour is implemented in [operations.ts](https://github.com/noiach/ts-ethereum-vm/blob/master/src/run/operations.ts).
 
 ## Example
 

@@ -33,6 +33,10 @@ export function step(state: State, opcode: OpCode, log: boolean): State {
   // Increment gas usage
   state = state.useGas(opcode.gas);
 
+  if (state.gasUsed > state.gasLimit) {
+    throw new VMError(`Out of gas: //${opcode.mnemonic}\\`);
+  }
+
   // Run operation
   state = operation(state);
 

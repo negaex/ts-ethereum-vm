@@ -1,4 +1,4 @@
-import { Record } from '../lib/record';
+import { Interface, Record } from '../lib/record';
 import { N256, Ox0 } from '../lib/N256';
 import { Block, emptyBlock } from './block';
 import { List } from 'immutable';
@@ -6,7 +6,7 @@ import { Transaction } from './transaction';
 import { genesisBlock } from '../run/genesis';
 import { Address, Accounts } from './account';
 
-interface BlockchainInterface {
+export interface BlockchainInterface {
   blocks: List<Block>;
 }
 

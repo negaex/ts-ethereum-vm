@@ -1,9 +1,9 @@
-import { Record } from '../lib/record';
+import { Interface, Record } from '../lib/record';
 import { Map, List } from 'immutable';
 import { Bit, N256, Ox0 } from '../lib/N256';
 import { N8, fromN256 } from '../lib/N8';
 
-interface MemoryInterface {
+export interface MemoryInterface {
     memory: Map<string, N8>;
     highest: N256;
 }

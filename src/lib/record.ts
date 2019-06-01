@@ -1,5 +1,25 @@
 import * as Immutable from 'immutable';
 
+// An interface of the properties that the class will have.
+export type Props<T> = {
+  readonly [P in keyof T]: T[P];
+};
+
+// An interface of the methods that the class will have.
+export interface Methods<T> {
+  get<K extends keyof T, V extends T[K]>(key: K): V;
+  set<K extends keyof T, V extends T[K]>(key: K, value: V): this;
+  setIn(keys: Iterable<any>, value: any): this;
+  mergeDeep<K extends keyof T, V extends T[K]>(inner: Partial<T> | { [key in K]: Partial<V> }): this;
+  merge<K extends keyof T, V extends T[K]>(inner: Partial<T> | { [key in K]: V }): this;
+  toJS(): T;
+}
+
+// An interface to which the return class will be cast.  
+export interface Interface<T> {
+  new(inner?: Partial<T>): Props<T> & Methods<T>;
+}
+
 /**
  * Create a new class that can be instantiated. All instances of the class
  * will be immutable, and will be guaranteed to have all properties of the
@@ -13,26 +33,6 @@ import * as Immutable from 'immutable';
  */
 // tslint:disable-next-line:typedef
 export function Record<T>(data: Pick<T, keyof T>) {
-
-  // An interface of the properties that the class will have.
-  type Props = {
-    readonly [P in keyof T]: T[P];
-  };
-
-  // An interface of the methods that the class will have.
-  interface Methods {
-    get<K extends keyof T, V extends T[K]>(key: K): V;
-    set<K extends keyof T, V extends T[K]>(key: K, value: V): this;
-    setIn(keys: Iterable<any>, value: any): this;
-    mergeDeep<K extends keyof T, V extends T[K]>(inner: Partial<T> | {[key in K]: Partial<V> }): this;
-    merge<K extends keyof T, V extends T[K]>(inner: Partial<T> | {[key in K]: V }): this;
-    toJS(): T;
-  }
-
-  // An interface to which the return class will be cast.
-  interface Interface {
-    new(inner?: Partial<T>): Props & Methods;
-  }
 
   // The returned class inherits from the Immutbale.Record class, using the
   // data argument to specify the default property values.
@@ -96,8 +96,8 @@ export function Record<T>(data: Pick<T, keyof T>) {
      *         original instance, except for the property values that were
      *         merged.
      */
-    public merge<K extends keyof T, V extends T[K]>(inner: Partial<T> | {[key in K]: V }): this {
+    public merge<K extends keyof T, V extends T[K]>(inner: Partial<T> | { [key in K]: V }): this {
       return super.merge(inner as any) as this;
     }
-  } as any as Interface;
+  } as any as Interface<T>;
 }

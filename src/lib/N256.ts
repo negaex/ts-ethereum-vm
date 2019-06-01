@@ -4,7 +4,7 @@ import { N8, fromN256 } from './N8';
 
 export type Bit = boolean;
 export type BitList = List<Bit>;
-type N256Param = number | N256 | BitList | Buffer | string;
+export type N256Param = number | N256 | BitList | Buffer | string;
 
 export function pad(arr: BitList, length: number): BitList {
   arr = arr.slice(Math.max(0, arr.size - length)).toList();
@@ -20,13 +20,13 @@ export function padRight(arr: BitList, length: number): BitList {
 
 export function fromString(length: number, bin: string, type?: string): BitList {
 
-  if (bin.slice(0, 2) === "0x") {
+  if (bin.slice(0, 2) === '0x') {
     bin = bin.slice(2, bin.length);
-    type = "hex";
+    type = 'hex';
   }
 
-  if (type === "hex") {
-    return fromBuffer(new Buffer(bin, "hex"));
+  if (type === 'hex') {
+    return fromBuffer(new Buffer(bin, 'hex'));
   }
 
   const arr: boolean[] = bin.split('').map((x: string) => (x === '1'));
@@ -334,7 +334,7 @@ export class N256 {
     const ret = new N256(this);
     const k = k256.toNumber();
 
-    const t = 256 - 8 * (k + 1)
+    const t = 256 - 8 * (k + 1);
     const sign = ret.value.get(t);
     for (let i = 0; i < t; i++) {
       ret.value = ret.value.set(i, sign);
@@ -342,7 +342,6 @@ export class N256 {
 
     return ret;
   }
-
 
   // Conversions
 
@@ -385,7 +384,7 @@ export class N256 {
   }
 
   toBuffer(trim?: boolean, minLength?: number): Buffer {
-    const buffer = Buffer.alloc(32)
+    const buffer = Buffer.alloc(32);
     let n8s: N8[] = fromN256(this);
     for (let i = 0; i < 32; i++) {
       buffer[i] = n8s[i].toNumber();
@@ -393,10 +392,10 @@ export class N256 {
     if (trim) {
       let leading = 0;
       const limit = minLength ? minLength : 32;
-      while (leading < limit && buffer[leading] == 0) {
+      while (leading < limit && buffer[leading] === 0) {
         leading++;
       }
-      return buffer.slice(leading)
+      return buffer.slice(leading);
     }
     return buffer;
   }

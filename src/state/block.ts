@@ -1,4 +1,4 @@
-import { Record } from '../lib/record';
+import { Interface, Record } from '../lib/record';
 import { N256, Ox0 } from '../lib/N256';
 import { Address } from './account';
 import { Transaction } from './transaction';
@@ -8,7 +8,7 @@ import { Storage } from './storage';
 import { run } from '../run/run';
 import { Account, Accounts, emptyAccounts } from './account';
 
-interface BlockInterface {
+export interface BlockInterface {
   parentHash: N256;
   // ommersHash: N256;
   beneficiary: Address;
@@ -67,7 +67,7 @@ export class Block extends Record<BlockInterface>({
   call(tx: Partial<Transaction>, from: Address): Buffer {
     let block: Block = this;
     tx = tx.set('accounts', this.accounts);
-    const newState: MachineState = tx.process(block, from);
+    const newState: MachineState = tx.process(block, from, true);
 
     return newState.returnValue;
   }

@@ -1,4 +1,4 @@
-import { Record } from '../lib/record';
+import { Interface, Record } from '../lib/record';
 import { Stack, emptyStack, stackToString } from './stack';
 import { Storage, emptyStorage, storageToString } from './storage';
 import { Memory } from './memory';
@@ -10,12 +10,13 @@ import { Transaction, emptyTransaction } from './transaction';
 import { Block, emptyBlock } from './block';
 import { Account, Accounts, emptyAccounts } from './account';
 
-interface MachineStateInterface {
+export interface MachineStateInterface {
   code: Buffer;
   programCounter: number;
   running: boolean;
   stack: Stack;
   gasUsed: number;
+  gasLimit: number;
   memory: Memory;
   logInfo: string;
   returnValue: Buffer;
@@ -34,6 +35,7 @@ export class MachineState extends Record<MachineStateInterface>({
   running: true,
   stack: emptyStack,
   gasUsed: 0,
+  gasLimit: 0,
   memory: new Memory(),
   logInfo: '',
   returnValue: Buffer.from([]),
@@ -122,7 +124,7 @@ export class MachineState extends Record<MachineStateInterface>({
   }
 
   storedAt(location: N256): N256 {
-    return this.accounts.get(this.address).storage.get(location) || new N256();
+    return this.accounts.get(this.address).storage.get(location) || new N256(0);
   }
 
   setMemoryByteAt(address: N256, byte: N8): MachineState {

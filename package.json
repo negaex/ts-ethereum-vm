@@ -2,9 +2,11 @@
   "name": "ts-ethereum-vm",
   "version": "0.0.0",
   "description": "Ethereum Virtual Machine (EVM) implemented in Typescript",
-  "main": "index.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "start": "tsc -p ./ --target ES5 && node build/src/index.js",
+    "build": "tslint -p . && tsc -p ./ --target ES5",
+    "start": "tsc -p ./ --target ES5 && node --prof build/src/index.js",
     "testing": "tsc -p ./ --target ES5 && node build/src/testing.js",
     "watch": "forever ./node_modules/.bin/nodemon --exitcrash --exec \"npm run start\" ./src/index.ts",
     "test": "mocha -r ts-node/register src/**/*_test.ts test/**/*.ts",
@@ -15,7 +17,7 @@
     "evm",
     "typescript"
   ],
-  "author": "***REMOVED***",
+  "author": "noiach",
   "license": "",
   "dependencies": {
     "@types/bignumber.js": "^5.0.0",

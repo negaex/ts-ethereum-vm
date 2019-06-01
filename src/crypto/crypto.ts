@@ -1,7 +1,7 @@
-import { N256 } from "../lib/N256";
-import { sha3 } from "../lib/sha3";
+import { N256 } from '../lib/N256';
+import { sha3 } from '../lib/sha3';
 
-const secp256k1 = require('secp256k1')
+const secp256k1 = require('secp256k1');
 
 export type Signature = {
     r: N256,
@@ -22,7 +22,7 @@ export const ecrecover = (msgHash: N256, v: N256, r: N256, s: N256): N256 => {
 
     ret = sha3(ret).toBuffer().slice(-20);
     return new N256(ret);
-}
+};
 
 export const ecsign = function (msgHash: N256, privateKey: N256): Signature {
     const sig = secp256k1.sign(msgHash, privateKey);
@@ -33,4 +33,4 @@ export const ecsign = function (msgHash: N256, privateKey: N256): Signature {
         v: new N256(sig.recovery + 27),
     };
     return ret;
-}
+};

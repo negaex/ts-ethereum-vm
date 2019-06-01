@@ -1,4 +1,4 @@
-import { Record } from '../lib/record';
+import { Interface, Record } from '../lib/record';
 import { N256, Ox0, Ox1 } from '../lib/N256';
 import { Account, Address, Accounts, emptyAccounts } from './account';
 import { MachineState, emptyMachineState } from './machinestate';
@@ -17,9 +17,9 @@ export const contractAddress = (creator: Address, nonce: N256): Address => {
     nonce.toBuffer(true),
   ];
   return sha3(rlp.encode(raw)).toAddress();
-}
+};
 
-interface TransactionInterface {
+export interface TransactionInterface {
   nonce: N256;
   gasPrice: N256;
   gasLimit: N256;
@@ -56,8 +56,7 @@ export class Transaction extends Record<TransactionInterface>({
       // Ox0.toBuffer(true),
       // Ox0.toBuffer(true),
       // Ox0.toBuffer(true),
-    ]
-
+    ];
 
     return sha3(rlp.encode(raw));
   }
@@ -81,7 +80,7 @@ export class Transaction extends Record<TransactionInterface>({
       .set('s', sig.s);
   }
 
-  process(block: Block, from: Address): MachineState {
+  process(block: Block, from: Address, log?: boolean): MachineState {
     let state: MachineState = emptyMachineState;
     state = state.set('currentBlock', block);
     state = state.set('currentTransaction', this);
@@ -112,23 +111,24 @@ export class Transaction extends Record<TransactionInterface>({
     state = state.set('accounts', accounts);
     state = state.set('address', to);
     state = state.set('caller', from);
+    state = state.set('gasLimit', this.gasLimit.toNumber());
 
     if (deployingContract) {
       state = state.set('code', this.data);
       state = state.set('callData', this.data);
-      const uploadedCode: Buffer = run(state, false).returnValue;
+      const uploadedCode: Buffer = run(state, log).returnValue;
       toAccount = toAccount.set('code', uploadedCode);
       // TODO: If someone has the private keys (very unlikely), is it set to 1 or nonce+1?
       toAccount = toAccount.set('nonce', toAccount.nonce.add(1));
       accounts = accounts.set(from, fromAccount).set(to, toAccount);
       state = state.set('accounts', accounts);
-      console.log(`Contract deployed to ${to.toHexAddress()}`)
+      console.log(`Contract deployed to ${to.toHexAddress()}`);
     } else {
       const code: Buffer = this.accounts.get(to).code;
       state = state.set('code', accounts.get(to).code);
       state = state.set('callData', this.data);
       if (state.get('code').length > 0) {
-        state = run(state, false);
+        state = run(state, log);
       }
     }
 
